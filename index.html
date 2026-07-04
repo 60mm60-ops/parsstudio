@@ -2973,13 +2973,15 @@ async function ensureModel(){
     RawImageCls=RawImage;
     env.allowLocalModels=false;
     if(env.backends?.onnx?.wasm){ env.backends.onnx.wasm.numThreads = 1; }
-    const MODEL_ID='onnx-community/BiRefNet_lite-ONNX';
-    // 公式サンプルはfp32。まずfp16を試して容量を抑え、無ければfp32へ。
+    // 公式サンプル準拠：モデルIDは -ONNX なし、dtypeは fp32。
+    // モバイルで重み取得が重い場合に備え、失敗時は量子化(q8)へ落とす。
+    const MODEL_ID='onnx-community/BiRefNet_lite';
     try{
-      segModel = await AutoModel.from_pretrained(MODEL_ID, { dtype:'fp16' });
-    }catch(err){
-      console.warn('fp16 load failed, falling back to fp32', err);
       segModel = await AutoModel.from_pretrained(MODEL_ID, { dtype:'fp32' });
+    }catch(err){
+      console.warn('fp32 load failed, falling back to q8', err);
+      if(window.__diagShow) window.__diagShow('fp32 failed → try q8', (err&&err.message)?err.message:String(err));
+      segModel = await AutoModel.from_pretrained(MODEL_ID, { dtype:'q8' });
     }
     segProcessor = await AutoProcessor.from_pretrained(MODEL_ID);
     return true;
