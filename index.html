@@ -615,7 +615,7 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
         <div class="spinner" id="spinner"></div>
         <div class="prog-label" id="prog-label">じゅんび中…</div>
         <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
-        <div class="prog-sub" id="prog-sub">はじめてのときは、AIモデル（約150MB）を読み込むため少し時間がかかります。<br>Wi-Fiのある場所を推奨します。2回目からは速くなります。</div>
+        <div class="prog-sub" id="prog-sub">はじめてのときは、AIモデルを読み込むため少し時間がかかります。<br>Wi-Fiのある場所を推奨します。2回目からは速くなります。</div>
       </div>
 
       <div class="stage" id="stage">
@@ -815,7 +815,7 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
 
 <!-- Footer credit (license) -->
 <div class="app-footer">
-  背景ぬきAI: <a href="https://huggingface.co/onnx-community/BiRefNet_lite-ONNX" target="_blank" rel="noopener">BiRefNet_lite</a> (MIT License) ／
+  背景ぬきAI: <a href="https://huggingface.co/Xenova/modnet" target="_blank" rel="noopener">MODNet</a> (MIT License) ／
   <a href="https://github.com/huggingface/transformers.js" target="_blank" rel="noopener">Transformers.js</a> (Apache-2.0) ／
   書き出し: html2canvas (MIT)
 </div>
@@ -2903,7 +2903,7 @@ window.ParsBoard = {
 <script type="module">
 // ══════════════════════════════════════════
 // CUTOUT（moduleスコープ）
-// AI: BiRefNet_lite-ONNX（MIT License）に差し替え
+// AI: MODNet（Xenova/modnet・MIT License）
 // ══════════════════════════════════════════
 const $=id=>document.getElementById(id);
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),2400);}
@@ -2962,7 +2962,7 @@ function updCoBtns(){
 
 function showWarn(msg){const w=$('warn');w.textContent=msg;w.classList.add('show');}
 
-// ── Transformers.js + BiRefNet_lite（MIT）読み込み ──
+// ── Transformers.js + MODNet（MIT）読み込み ──
 async function ensureModel(){
   if(segModel && segProcessor) return true;
   if(libLoading){ while(libLoading){ await new Promise(r=>setTimeout(r,120)); } return !!segModel; }
@@ -2973,16 +2973,10 @@ async function ensureModel(){
     RawImageCls=RawImage;
     env.allowLocalModels=false;
     if(env.backends?.onnx?.wasm){ env.backends.onnx.wasm.numThreads = 1; }
-    // 公式サンプル準拠：モデルIDは -ONNX なし、dtypeは fp32。
-    // モバイルで重み取得が重い場合に備え、失敗時は量子化(q8)へ落とす。
-    const MODEL_ID='onnx-community/BiRefNet_lite';
-    try{
-      segModel = await AutoModel.from_pretrained(MODEL_ID, { dtype:'fp32' });
-    }catch(err){
-      console.warn('fp32 load failed, falling back to q8', err);
-      if(window.__diagShow) window.__diagShow('fp32 failed → try q8', (err&&err.message)?err.message:String(err));
-      segModel = await AutoModel.from_pretrained(MODEL_ID, { dtype:'q8' });
-    }
+    // MODNet（Xenova/modnet・MIT License・軽量）。公式サンプル準拠でdtype:fp32。
+    // RMBG-1.4と同じ素直な出力（output[0]）なので後処理もシンプル。
+    const MODEL_ID='Xenova/modnet';
+    segModel = await AutoModel.from_pretrained(MODEL_ID, { dtype:'fp32' });
     segProcessor = await AutoProcessor.from_pretrained(MODEL_ID);
     return true;
   }finally{ libLoading=false; }
@@ -3014,9 +3008,6 @@ async function canvasToRawImage(c){
   return await RawImageCls.fromURL(dataURL);
 }
 
-// ── Sigmoid（BiRefNetの出力はlogit。0..1へ）──
-function sigmoid(x){ return 1/(1+Math.exp(-x)); }
-
 // ── 背景ぬき本体 ──
 async function runCutout(blob){
   showProgress(true,'AIモデルを読み込み中…');
@@ -3028,14 +3019,13 @@ async function runCutout(blob){
     // 縮小済みRawImageを用意
     const src=await loadScaledRawImage(blob);
 
-    // 公式サンプル準拠：入力キーは input_image、出力は output_image（配列）
+    // MODNet公式準拠：入力キーは input、出力は output（配列、output[0]がアルファマット）
     const { pixel_values } = await segProcessor(src);
-    const out = await segModel({ input_image: pixel_values });
+    const { output } = await segModel({ input: pixel_values });
 
-    let t = out.output_image;
-    // 実装差の保険：output_imageが無ければ別名を拾う
-    if(!t) t = out.output || out.logits || out.alphas || null;
-    if(!t){ for(const k in out){ if(out[k] && (out[k].dims||out[k].data)){ t=out[k]; break; } } }
+    let t = output;
+    if(Array.isArray(t)) t = t[0];
+    else if(t && t[0] !== undefined && typeof t.mul !== 'function') t = t[0];
     if(!t) throw new Error('マスク出力を取得できませんでした');
 
     imgW=src.width; imgH=src.height;
@@ -3043,53 +3033,16 @@ async function runCutout(blob){
     origCanvas.width=imgW; origCanvas.height=imgH;
     origCanvas.getContext('2d').drawImage(src.toCanvas(),0,0);
 
-    // 公式：output_image[0].sigmoid().mul(255).to('uint8') を原寸へresize
+    // 公式：RawImage.fromTensor(output[0].mul(255).to('uint8')).resize(w,h)
     aiMask=new Uint8ClampedArray(imgW*imgH);
-    let usedTensorPath=false;
-    try{
-      const tImg = Array.isArray(t) ? t[0] : (t[0] !== undefined && t.sigmoid===undefined ? t[0] : t);
-      if(tImg && typeof tImg.sigmoid==='function'){
-        const maskRawImg = await RawImageCls.fromTensor(tImg.sigmoid().mul(255).to('uint8'));
-        const resized = await maskRawImg.resize(imgW, imgH);
-        // RawImage.data はグレースケール1ch（channels=1）
-        const rd = resized.data;
-        if(resized.channels===1){
-          for(let i=0;i<aiMask.length;i++) aiMask[i]=rd[i];
-        }else{
-          const ch=resized.channels;
-          for(let i=0;i<aiMask.length;i++) aiMask[i]=rd[i*ch];
-        }
-        usedTensorPath=true;
-      }
-    }catch(tensorErr){
-      console.warn('tensor path failed, falling back to manual sigmoid', tensorErr);
-    }
-
-    // フォールバック：生データを手動sigmoid→canvasで原寸へ拡大
-    if(!usedTensorPath){
-      const tt = Array.isArray(t) ? t[0] : t;
-      const dims = tt.dims || tt.shape;
-      const raw = tt.data;
-      const maskH = dims[dims.length-2];
-      const maskW = dims[dims.length-1];
-      let needSigmoid=false;
-      for(let i=0;i<raw.length;i+=Math.max(1,Math.floor(raw.length/64))){
-        if(raw[i]<0 || raw[i]>1){ needSigmoid=true; break; }
-      }
-      const mcv=document.createElement('canvas'); mcv.width=maskW; mcv.height=maskH;
-      const mctx=mcv.getContext('2d');
-      const mimg=mctx.createImageData(maskW,maskH);
-      for(let i=0;i<raw.length;i++){
-        let v=needSigmoid ? sigmoid(raw[i]) : raw[i];
-        v=Math.max(0,Math.min(255,Math.round(v*255)));
-        mimg.data[i*4]=v; mimg.data[i*4+1]=v; mimg.data[i*4+2]=v; mimg.data[i*4+3]=255;
-      }
-      mctx.putImageData(mimg,0,0);
-      const scv=document.createElement('canvas'); scv.width=imgW; scv.height=imgH;
-      const sctx=scv.getContext('2d');
-      sctx.drawImage(mcv,0,0,imgW,imgH);
-      const maskScaled=sctx.getImageData(0,0,imgW,imgH).data;
-      for(let i=0;i<aiMask.length;i++){ aiMask[i]=maskScaled[i*4]; }
+    const maskRawImg = await RawImageCls.fromTensor(t.mul(255).to('uint8'));
+    const resized = await maskRawImg.resize(imgW, imgH);
+    const rd = resized.data;
+    const ch = resized.channels || 1;
+    if(ch===1){
+      for(let i=0;i<aiMask.length;i++) aiMask[i]=rd[i];
+    }else{
+      for(let i=0;i<aiMask.length;i++) aiMask[i]=rd[i*ch];
     }
     editMask=new Int16Array(imgW*imgH);
     cutCanvas=null; cutCtx=null; baseImageData=null; workImageData=null;
@@ -3109,7 +3062,7 @@ async function runCutout(blob){
     showProgress(false);
     let msg=(e&&e.message?e.message:String(e));
     if(/load failed|fetch|network/i.test(msg)){
-      msg='モデルの読み込みに失敗しました（通信）。Wi-Fiの安定した場所でもう一度お試しください。初回は約150MBの読み込みがあります。';
+      msg='モデルの読み込みに失敗しました（通信）。Wi-Fiの安定した場所でもう一度お試しください。初回はAIモデルの読み込みがあります。';
     }else{
       msg='背景ぬきに失敗しました。エラー内容: '+msg;
     }
