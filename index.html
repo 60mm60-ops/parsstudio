@@ -850,40 +850,10 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
 </div>
 
 <script>
-// ═══════════════════════════════
-// 【診断モード】全エラーを画面に強制表示（原因特定用・後で外す）
-// ═══════════════════════════════
-(function(){
-  function showDiag(title, detail){
-    let box=document.getElementById('__diag');
-    if(!box){
-      box=document.createElement('div');
-      box.id='__diag';
-      box.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:2147483647;max-height:60vh;overflow:auto;background:#1a0000;color:#ffb0b0;font:12px/1.5 monospace;padding:12px 14px;border-top:2px solid #c0392b;white-space:pre-wrap;word-break:break-word;';
-      const btn=document.createElement('button');
-      btn.textContent='✕ 閉じる';
-      btn.style.cssText='position:sticky;top:0;float:right;background:#c0392b;color:#fff;border:none;padding:4px 10px;cursor:pointer;font:12px monospace;';
-      btn.onclick=()=>box.remove();
-      box.appendChild(btn);
-      document.body.appendChild(box);
-    }
-    const p=document.createElement('div');
-    p.textContent='▼ '+title+'\n'+detail+'\n';
-    box.appendChild(p);
-  }
-  window.addEventListener('error', e=>{
-    // CDN由来の無害な "Script error." は無視
-    if(e.message==='Script error.' && !e.filename) return;
-    const d=(e.error&&e.error.stack) ? e.error.stack : (e.message+' @ '+(e.filename||'?')+':'+e.lineno);
-    showDiag('window.error', d);
-  }, true);
-  window.addEventListener('unhandledrejection', e=>{
-    const r=e.reason;
-    const d=(r&&r.stack)?r.stack:(r&&r.message?r.message:String(r));
-    showDiag('unhandledrejection', d);
-  });
-  window.__diagShow=showDiag; // 手動でも呼べるように
-})();
+// CDN由来の無害な "Script error." を抑制
+window.addEventListener('error', (e)=>{
+  if(e.message === 'Script error.' && !e.filename){ e.preventDefault(); return false; }
+}, true);
 </script>
 
 <script>
@@ -3064,7 +3034,6 @@ async function runCutout(blob){
     toast('背景をぬきました');
   }catch(e){
     console.error(e);
-    if(window.__diagShow) window.__diagShow('runCutout catch', (e&&e.stack)?e.stack:String(e));
     showProgress(false);
     let msg=(e&&e.message?e.message:String(e));
     if(/load failed|fetch|network/i.test(msg)){
