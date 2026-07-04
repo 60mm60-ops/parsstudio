@@ -716,6 +716,8 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
             <button class="brush-btn on" id="shape-free">フリー</button>
             <button class="brush-btn" id="shape-line">直線</button>
             <button class="brush-btn" id="shape-curve">曲線</button>
+            <button class="brush-btn" id="shape-rect">矩形</button>
+            <button class="brush-btn" id="shape-poly">多角形</button>
           </div>
           <div class="brush-size" id="brush-size-row">
             <span class="bg-label">筆の太さ</span>
@@ -728,7 +730,7 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
         </div>
         <div class="brush-bar" id="curve-controls" style="display:none;">
           <div class="brush-modes">
-            <span class="bg-label">曲線：点をタップで追加 →</span>
+            <span class="bg-label" id="shape-pts-label">点をタップで追加 →</span>
             <button class="brush-btn" id="curve-commit">✓ 確定</button>
             <button class="brush-btn" id="curve-back">1点戻す</button>
             <button class="brush-btn" id="curve-cancel">キャンセル</button>
@@ -3427,6 +3429,15 @@ function drawShapePreview(ctx){
   if(brushShape==='line' && lineStart && linePrev){
     ctx.beginPath(); ctx.moveTo(lineStart.x,lineStart.y); ctx.lineTo(linePrev.x,linePrev.y); ctx.stroke();
   }
+  if(brushShape==='rect' && lineStart && linePrev){
+    // 面のプレビュー：半透明塗り＋枠線
+    ctx.fillStyle=previewColor();
+    const x=Math.min(lineStart.x,linePrev.x), y=Math.min(lineStart.y,linePrev.y);
+    const w2=Math.abs(linePrev.x-lineStart.x), h2=Math.abs(linePrev.y-lineStart.y);
+    ctx.fillRect(x,y,w2,h2);
+    ctx.lineWidth=Math.max(2,imgW*0.003);
+    ctx.strokeRect(x,y,w2,h2);
+  }
   if(brushShape==='curve' && curvePts.length>0){
     if(curvePts.length>1){
       const pts=catmullRom(curvePts, 16);
@@ -3434,16 +3445,62 @@ function drawShapePreview(ctx){
       for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x,pts[i].y);
       ctx.stroke();
     }
-    // アンカー点マーカー
-    ctx.lineWidth=Math.max(2,imgW*0.003);
-    curvePts.forEach((p,i)=>{
-      ctx.beginPath(); ctx.arc(p.x,p.y,Math.max(5,imgW*0.008),0,Math.PI*2);
-      ctx.fillStyle=i===curvePts.length-1?'rgba(138,94,40,0.9)':'rgba(255,255,255,0.9)';
-      ctx.strokeStyle='rgba(138,94,40,0.9)';
-      ctx.fill(); ctx.stroke();
-    });
+    drawAnchors(ctx);
+  }
+  if(brushShape==='poly' && curvePts.length>0){
+    if(curvePts.length>1){
+      ctx.beginPath(); ctx.moveTo(curvePts[0].x,curvePts[0].y);
+      for(let i=1;i<curvePts.length;i++) ctx.lineTo(curvePts[i].x,curvePts[i].y);
+      if(curvePts.length>2){
+        ctx.closePath();
+        ctx.fillStyle=previewColor();
+        ctx.fill();
+      }
+      ctx.lineWidth=Math.max(2,imgW*0.003);
+      ctx.setLineDash([imgW*0.01,imgW*0.008]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    drawAnchors(ctx);
   }
   ctx.restore();
+}
+
+// アンカー点マーカー（曲線・多角形共用）
+function drawAnchors(ctx){
+  ctx.lineWidth=Math.max(2,imgW*0.003);
+  curvePts.forEach((p,i)=>{
+    ctx.beginPath(); ctx.arc(p.x,p.y,Math.max(5,imgW*0.008),0,Math.PI*2);
+    ctx.fillStyle=i===curvePts.length-1?'rgba(138,94,40,0.9)':'rgba(255,255,255,0.9)';
+    ctx.strokeStyle='rgba(138,94,40,0.9)';
+    ctx.fill(); ctx.stroke();
+  });
+}
+
+// ── 面の一括処理：矩形・多角形の内側をまとめて消す/戻す ──
+function fillVal(){ return brushMode==='erase' ? -255 : 255; }
+function fillRectMask(a,b){
+  const x0=Math.max(0,Math.floor(Math.min(a.x,b.x))), x1=Math.min(imgW-1,Math.ceil(Math.max(a.x,b.x)));
+  const y0=Math.max(0,Math.floor(Math.min(a.y,b.y))), y1=Math.min(imgH-1,Math.ceil(Math.max(a.y,b.y)));
+  const v=fillVal();
+  for(let y=y0;y<=y1;y++){
+    const row=y*imgW;
+    editMask.fill(v,row+x0,row+x1+1);
+  }
+}
+function fillPolygonMask(pts){
+  // canvasのfill判定を借りて内側ピクセルを求める（自己交差もeven-oddで安全）
+  const off=document.createElement('canvas'); off.width=imgW; off.height=imgH;
+  const ctx=off.getContext('2d');
+  ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y);
+  for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x,pts[i].y);
+  ctx.closePath();
+  ctx.fillStyle='#fff'; ctx.fill();
+  const d=ctx.getImageData(0,0,imgW,imgH).data;
+  const v=fillVal();
+  for(let i=0;i<editMask.length;i++){
+    if(d[i*4+3]>127) editMask[i]=v;
+  }
 }
 
 // Catmull-Romスプライン：アンカー点を通る滑らかな曲線をサンプリング
@@ -3531,31 +3588,42 @@ function startPaint(e){
   if(!origCanvas)return;
   const p=canvasPointToImage(e);
   if(brushMode==='wand'){ wandEraseAt(p.x,p.y); e.preventDefault(); return; }
-  if(brushShape==='line'){ lineStart=p; linePrev=p; drawResult(); e.preventDefault(); return; }
-  if(brushShape==='curve'){
+  if(brushShape==='line' || brushShape==='rect'){ lineStart=p; linePrev=p; drawResult(); e.preventDefault(); return; }
+  if(brushShape==='curve' || brushShape==='poly'){
     curvePts.push(p);
     $('curve-controls').style.display='flex';
+    $('shape-pts-label').textContent = brushShape==='poly'
+      ? '多角形：頂点をタップで追加（3点以上）→'
+      : '曲線：通したい点をタップで追加 →';
     drawResult(); e.preventDefault(); return;
   }
   painting=true; paintAt(p.x,p.y); lastPt=p; scheduleRecompose(); e.preventDefault();
 }
 function movePaint(e){
   const p=canvasPointToImage(e);
-  if(brushMode!=='wand') updateBrushCursor(e); // ワンド時はリング不要
-  if(brushShape==='line' && lineStart){ linePrev=p; drawResult(); e.preventDefault(); return; }
+  if(brushMode!=='wand' && brushShape!=='rect' && brushShape!=='poly') updateBrushCursor(e); // 面系はリング不要
+  if((brushShape==='line'||brushShape==='rect') && lineStart){ linePrev=p; drawResult(); e.preventDefault(); return; }
   if(!painting){ return; }
   if(lastPt) paintLine(lastPt.x,lastPt.y,p.x,p.y); else paintAt(p.x,p.y);
   lastPt=p; scheduleRecompose(); e.preventDefault();
 }
 function endPaint(){
-  if(brushShape==='line' && lineStart && linePrev){
+  if((brushShape==='line'||brushShape==='rect') && lineStart && linePrev){
     // ドラッグ距離がほぼゼロ（タップ）なら何もしない
     if(Math.hypot(linePrev.x-lineStart.x,linePrev.y-lineStart.y)>3){
-      paintLine(lineStart.x,lineStart.y,linePrev.x,linePrev.y);
-      lineStart=null; linePrev=null;
-      recompose();
-      pushCoHist();
-      toast('直線を引きました（↶で取り消し可）');
+      if(brushShape==='rect'){
+        fillRectMask(lineStart,linePrev);
+        lineStart=null; linePrev=null;
+        recompose();
+        pushCoHist();
+        toast('矩形の中を処理しました（↶で取り消し可）');
+      }else{
+        paintLine(lineStart.x,lineStart.y,linePrev.x,linePrev.y);
+        lineStart=null; linePrev=null;
+        recompose();
+        pushCoHist();
+        toast('直線を引きました（↶で取り消し可）');
+      }
       return;
     }
     lineStart=null; linePrev=null; drawResult();
@@ -3626,12 +3694,18 @@ function setShapeBtns(){
   $('shape-free').classList.toggle('on',brushShape==='free');
   $('shape-line').classList.toggle('on',brushShape==='line');
   $('shape-curve').classList.toggle('on',brushShape==='curve');
-  if(brushShape!=='curve') cancelCurve();
-  if(brushShape!=='line'){ lineStart=null; linePrev=null; if(origCanvas) drawResult(); }
+  $('shape-rect').classList.toggle('on',brushShape==='rect');
+  $('shape-poly').classList.toggle('on',brushShape==='poly');
+  // 面系（矩形・多角形）は筆の太さ不要
+  $('brush-size-row').style.display = (brushShape==='rect'||brushShape==='poly')?'none':'flex';
+  if(brushShape!=='curve' && brushShape!=='poly') cancelCurve();
+  if(brushShape!=='line' && brushShape!=='rect'){ lineStart=null; linePrev=null; if(origCanvas) drawResult(); }
 }
 $('shape-free').addEventListener('click',()=>{ brushShape='free'; setShapeBtns(); });
 $('shape-line').addEventListener('click',()=>{ brushShape='line'; setShapeBtns(); toast('ドラッグで直線が引けます'); });
 $('shape-curve').addEventListener('click',()=>{ brushShape='curve'; setShapeBtns(); toast('通したい点を順にタップ →「確定」'); });
+$('shape-rect').addEventListener('click',()=>{ brushShape='rect'; setShapeBtns(); toast('ドラッグで範囲指定 → 中を'+(brushMode==='erase'?'消します':'戻します')); });
+$('shape-poly').addEventListener('click',()=>{ brushShape='poly'; setShapeBtns(); toast('頂点を順にタップ（3点以上）→「確定」で中を処理'); });
 
 function cancelCurve(){
   curvePts=[];
@@ -3645,6 +3719,15 @@ $('curve-back').addEventListener('click',()=>{
   drawResult();
 });
 $('curve-commit').addEventListener('click',()=>{
+  if(brushShape==='poly'){
+    if(curvePts.length<3){ toast('頂点を3つ以上打ってください'); return; }
+    fillPolygonMask(curvePts);
+    cancelCurve();
+    recompose();
+    pushCoHist();
+    toast('多角形の中を処理しました（↶で取り消し可）');
+    return;
+  }
   if(curvePts.length<2){ toast('点を2つ以上打ってください'); return; }
   const pts=catmullRom(curvePts, 16);
   for(let i=1;i<pts.length;i++) paintLine(pts[i-1].x,pts[i-1].y,pts[i].x,pts[i].y);
