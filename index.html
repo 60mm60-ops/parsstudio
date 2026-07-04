@@ -3019,13 +3019,19 @@ async function runCutout(blob){
     // 縮小済みRawImageを用意
     const src=await loadScaledRawImage(blob);
 
-    // MODNet公式準拠：入力キーは input、出力は output（配列、output[0]がアルファマット）
+    // MODNet公式準拠：入力キーは input、出力は output
     const { pixel_values } = await segProcessor(src);
     const { output } = await segModel({ input: pixel_values });
 
+    // output は [1,1,H,W] の4次元テンソル。fromTensorは3次元[C,H,W]を要求するので
+    // バッチ次元を1つ剥がして [1,H,W] にする。
     let t = output;
-    if(Array.isArray(t)) t = t[0];
-    else if(t && t[0] !== undefined && typeof t.mul !== 'function') t = t[0];
+    if(Array.isArray(t)) t = t[0];              // 配列で返る実装への保険
+    // 4次元なら先頭のバッチ次元を落とす（実装差に両対応：squeeze優先、なければ添字）
+    if(t && t.dims && t.dims.length===4){
+      if(typeof t.squeeze==='function'){ t = t.squeeze(0); }
+      else { t = t[0]; }
+    }
     if(!t) throw new Error('マスク出力を取得できませんでした');
 
     imgW=src.width; imgH=src.height;
@@ -3033,7 +3039,7 @@ async function runCutout(blob){
     origCanvas.width=imgW; origCanvas.height=imgH;
     origCanvas.getContext('2d').drawImage(src.toCanvas(),0,0);
 
-    // 公式：RawImage.fromTensor(output[0].mul(255).to('uint8')).resize(w,h)
+    // 公式：RawImage.fromTensor(mask.mul(255).to('uint8')).resize(w,h)
     aiMask=new Uint8ClampedArray(imgW*imgH);
     const maskRawImg = await RawImageCls.fromTensor(t.mul(255).to('uint8'));
     const resized = await maskRawImg.resize(imgW, imgH);
