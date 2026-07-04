@@ -501,6 +501,8 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
         <div class="compare-bar">
           <button class="cmp-btn active" id="cmp-edit">編集中</button>
           <button class="cmp-btn" id="cmp-orig">元画像</button>
+          <button class="cmp-btn" id="lumen-undo" disabled>↶</button>
+          <button class="cmp-btn" id="lumen-redo" disabled>↷</button>
         </div>
         <div class="canvas-wrap" id="lumen-wrap">
           <div class="drop-placeholder" id="lumen-placeholder">
@@ -563,6 +565,10 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
   <div class="tab-panel" id="panel-aura">
     <div class="tool-layout">
       <div class="canvas-area">
+        <div class="compare-bar">
+          <button class="cmp-btn" id="aura-undo" disabled>↶</button>
+          <button class="cmp-btn" id="aura-redo" disabled>↷</button>
+        </div>
         <div class="canvas-wrap" id="aura-wrap">
           <div class="drop-placeholder" id="aura-placeholder">
             <div class="drop-icon">◉</div>
@@ -580,7 +586,7 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
           <button class="cmp-btn active" id="amask-add">足す</button>
           <button class="cmp-btn" id="amask-del">消す</button>
           <span class="mb-label">太さ</span>
-          <input type="range" id="amask-size" min="6" max="220" step="2" value="60">
+          <input type="range" id="amask-size" min="2" max="220" step="2" value="60">
           <button class="cmp-btn" id="amask-done">✓ 完了</button>
         </div>
       </div>
@@ -645,6 +651,7 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
         </div>
         <div class="sidebar-footer">
           <button class="btn-primary" id="aura-confirm">✦ 光を確定して追加</button>
+          <button class="btn-primary" id="aura-to-board">✓ 仕上げてBoardへ</button>
           <button class="btn-secondary" id="aura-to-lumen">← Lumenへ戻る</button>
           <button class="btn-secondary btn-danger" id="aura-reset-all">全光源リセット</button>
           <button class="btn-secondary" id="aura-export">Export PNG</button>
@@ -658,6 +665,8 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
     <div class="cutout-toolbar">
       <span class="ct-title">Cutout — 背景ぬき</span>
       <div class="head-actions">
+        <button class="btn" id="co-undo" title="元に戻す" disabled>↶</button>
+        <button class="btn" id="co-redo" title="やり直す" disabled>↷</button>
         <button class="btn" id="btn-reset" disabled>やり直す</button>
         <button class="btn primary" id="btn-save" disabled>保存</button>
       </div>
@@ -679,6 +688,16 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
       </div>
 
       <div class="stage" id="stage">
+        <div class="brush-bar" style="padding:0;">
+          <div class="brush-modes">
+            <span class="bg-label">表示</span>
+            <button class="brush-btn" id="zoom-out">－</button>
+            <button class="brush-btn" id="zoom-in">＋</button>
+            <button class="brush-btn" id="zoom-fit">全体</button>
+            <button class="brush-btn" id="pan-toggle">🖐 移動</button>
+            <span class="bg-label" id="zoom-val">100%</span>
+          </div>
+        </div>
         <div class="cutout-canvas-wrap" id="cutout-canvas-wrap">
           <canvas id="result-canvas"></canvas>
           <div class="brush-ring" id="brush-ring"></div>
@@ -700,11 +719,11 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
           </div>
           <div class="brush-size" id="brush-size-row">
             <span class="bg-label">筆の太さ</span>
-            <input type="range" id="brush-size" min="8" max="120" step="2" value="40">
+            <input type="range" id="brush-size" min="1" max="120" step="1" value="40">
           </div>
           <div class="brush-size" id="wand-tol-row" style="display:none;">
             <span class="bg-label">色の近さ</span>
-            <input type="range" id="wand-tol" min="8" max="90" step="2" value="32">
+            <input type="range" id="wand-tol" min="4" max="90" step="2" value="18">
           </div>
         </div>
         <div class="brush-bar" id="curve-controls" style="display:none;">
@@ -733,7 +752,6 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
         <div class="tools">
           <button class="btn primary" id="btn-tolumen">→ Lumenへ渡す</button>
           <button class="btn" id="btn-tosnap">スナップへ送る</button>
-          <button class="btn" id="btn-undo-stroke">直前を取り消す</button>
           <button class="btn" id="btn-clear-edits">手直しをリセット</button>
           <button class="btn" id="btn-another">別の写真</button>
         </div>
@@ -1093,6 +1111,7 @@ function applyLoadedImage(img, name, fmtLabel, hasAlphaHint) {
   document.querySelectorAll('[data-tab="aura"]').forEach(t=>t.classList.remove('disabled'));
 
   applyLumen();
+  lumHistReset();
   showToast('画像を読み込みました');
 }
 
@@ -1150,6 +1169,48 @@ function syncLumenSlider(slId, niId, key) {
   });
 }
 lumenSliders.forEach(([slId, niId, key]) => syncLumenSlider(slId, niId, key));
+
+// ═══════════════════════════════
+// LUMEN: アンドゥ/リドゥ（パラメータ履歴）
+// ═══════════════════════════════
+let lumHist=[], lumHp=-1;
+function lumSnap(){ return JSON.stringify(state.lumenParams); }
+function lumHistReset(){ lumHist=[lumSnap()]; lumHp=0; updLumBtns(); }
+function pushLumHist(){
+  const s=lumSnap();
+  if(lumHist[lumHp]===s) return;
+  lumHist=lumHist.slice(0,lumHp+1); lumHist.push(s); lumHp++;
+  if(lumHist.length>40){ lumHist.shift(); lumHp--; }
+  updLumBtns();
+}
+function lumApplySnap(s){
+  Object.assign(state.lumenParams, JSON.parse(s));
+  lumenSliders.forEach(([slId, niId, key]) => {
+    document.getElementById(slId).value = state.lumenParams[key];
+    document.getElementById(niId).value = state.lumenParams[key];
+  });
+  applyLumen();
+}
+function lumUndo(){ if(lumHp>0){ lumHp--; lumApplySnap(lumHist[lumHp]); updLumBtns(); } }
+function lumRedo(){ if(lumHp<lumHist.length-1){ lumHp++; lumApplySnap(lumHist[lumHp]); updLumBtns(); } }
+function updLumBtns(){
+  document.getElementById('lumen-undo').disabled = lumHp<=0;
+  document.getElementById('lumen-redo').disabled = lumHp>=lumHist.length-1;
+}
+document.getElementById('lumen-undo').addEventListener('click',lumUndo);
+document.getElementById('lumen-redo').addEventListener('click',lumRedo);
+// スライダー操作の「区切り」(changeイベント)で履歴に積む
+lumenSliders.forEach(([slId, niId]) => {
+  document.getElementById(slId).addEventListener('change', pushLumHist);
+  document.getElementById(niId).addEventListener('change', pushLumHist);
+});
+document.addEventListener('keydown',e=>{
+  if(state.currentTab!=='lumen')return;
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'){
+    e.preventDefault();
+    if(e.shiftKey) lumRedo(); else lumUndo();
+  }
+});
 
 // 画素処理を純粋関数に分離（原寸Export時も再利用できる）
 function applyLumenToData(src, w, h) {
@@ -1259,7 +1320,7 @@ document.querySelectorAll('.preset-btn').forEach(btn=>{
     });
     document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    applyLumen(); showToast(`プリセット: ${btn.textContent}`);
+    applyLumen(); pushLumHist(); showToast(`プリセット: ${btn.textContent}`);
   });
 });
 
@@ -1270,7 +1331,7 @@ document.getElementById('lumen-reset').addEventListener('click', () => {
     document.getElementById(niId).value = 0;
   });
   document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-  applyLumen(); showToast('リセットしました');
+  applyLumen(); pushLumHist(); showToast('リセットしました');
 });
 
 // dataURL(base64)を直接Blobに変換（fetchを使わない・iOS Safariで安定）
@@ -1394,6 +1455,7 @@ function ensureAuraLayerBuffers(w,h){
     L.mask=new Uint8ClampedArray(w*h).fill(255);
     L._content=null; L._dirty=true;
   });
+  if(typeof auraHistReset==='function') setTimeout(auraHistReset,0);
 }
 
 function buildLayerCanvas(L){
@@ -1681,7 +1743,7 @@ document.querySelectorAll('.blend-btn').forEach(btn=>{
     document.querySelectorAll('.blend-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     state.auraBlendMode=btn.dataset.blend;
-    scheduleAura(); // canvas合成に統一したので再描画で反映
+    scheduleAura(); pushAuraHist();
   });
 });
 
@@ -1697,7 +1759,7 @@ document.getElementById('aura-confirm').addEventListener('click',()=>{
 
   state.auraLights.push({...state.auraPreview, _cache: off});
   state.auraPreview = null;
-  updateLightList(); scheduleAura();
+  updateLightList(); scheduleAura(); pushAuraHist();
   showToast(`光源を確定！計 ${state.auraLights.length} 個`);
 });
 
@@ -1718,7 +1780,7 @@ function updateLightList(){
   list.querySelectorAll('.light-del').forEach(btn=>{
     btn.addEventListener('click',()=>{
       state.auraLights.splice(parseInt(btn.dataset.idx),1);
-      updateLightList();scheduleAura();showToast('光源を削除しました');
+      updateLightList();scheduleAura();pushAuraHist();showToast('光源を削除しました');
     });
   });
 }
@@ -1771,30 +1833,34 @@ function renderAuraLayers(){
     box.querySelector('.l-on').addEventListener('change',e=>{
       L.on=e.target.checked;
       if(!L.on && maskEditKey===key) exitMaskEdit();
-      renderAuraLayers(); scheduleAura();
+      renderAuraLayers(); scheduleAura(); pushAuraHist();
     });
     if(L.on){
       box.querySelectorAll('[data-ltype]').forEach(b=>b.addEventListener('click',()=>{
-        L.type=b.dataset.ltype; L._dirty=true; renderAuraLayers(); scheduleAura();
+        L.type=b.dataset.ltype; L._dirty=true; renderAuraLayers(); scheduleAura(); pushAuraHist();
       }));
       box.querySelector('.l-c1').addEventListener('input',e=>{ L.c1=e.target.value; L._dirty=true; scheduleAura(); });
+      box.querySelector('.l-c1').addEventListener('change',()=>pushAuraHist());
       box.querySelector('.l-c2')?.addEventListener('input',e=>{ L.c2=e.target.value; L._dirty=true; scheduleAura(); });
+      box.querySelector('.l-c2')?.addEventListener('change',()=>pushAuraHist());
       const ang=box.querySelector('.l-angle');
       ang?.addEventListener('input',e=>{
         L.angle=+e.target.value; L._dirty=true;
         box.querySelector('.l-angle-val').textContent=L.angle+'°';
         scheduleAura();
       });
+      ang?.addEventListener('change',()=>pushAuraHist());
       const op=box.querySelector('.l-op');
       op.addEventListener('input',e=>{
         L.opacity=+e.target.value/100;
         box.querySelector('.l-op-val').textContent=e.target.value+'%';
         scheduleAura();
       });
+      op.addEventListener('change',()=>pushAuraHist());
       box.querySelector('.l-blend').addEventListener('change',e=>{
         L.blend=e.target.value;
         box.querySelector('.alayer-badge').textContent=(AURA_BLENDS.find(b=>b[0]===L.blend)||['','通常'])[1];
-        scheduleAura();
+        scheduleAura(); pushAuraHist();
       });
       box.querySelector('[data-lmask]').addEventListener('click',()=>{
         if(maskEditKey===key){ exitMaskEdit(); } else { enterMaskEdit(key,label); }
@@ -1861,14 +1927,96 @@ function maskPointer(e, phase){
     if(maskLastPt) maskPaintLine(L,maskLastPt.x,maskLastPt.y,ix,iy); else maskPaintAt(L,ix,iy);
     maskLastPt={x:ix,y:iy};
   }
-  else{ maskPainting=false; maskLastPt=null; }
+  else{ maskPainting=false; maskLastPt=null; L._dirty=true; scheduleAura(); pushAuraHist(); return; }
   L._dirty=true;
   scheduleAura();
 }
 
 renderAuraLayers();
+
+// ═══════════════════════════════
+// AURA: アンドゥ/リドゥ（光源＋レイヤー＋マスク）
+// ═══════════════════════════════
+let auraHist=[], auraHp=-1;
+function rleEnc8(arr){
+  const out=[]; let i=0;
+  while(i<arr.length){ const v=arr[i]; let j=i+1; while(j<arr.length&&arr[j]===v)j++; out.push(v,j-i); i=j; }
+  return out;
+}
+function rleDec8(rle,len){
+  const arr=new Uint8ClampedArray(len); let p=0;
+  for(let i=0;i<rle.length;i+=2){ const v=rle[i],n=rle[i+1]; if(v!==0) arr.fill(v,p,p+n); p+=n; }
+  return arr;
+}
+function auraSnap(){
+  const layers={}, masks={};
+  Object.entries(auraLayers).forEach(([k,L])=>{
+    layers[k]={on:L.on,type:L.type,c1:L.c1,c2:L.c2,angle:L.angle,blend:L.blend,opacity:L.opacity};
+    masks[k]=L.mask?rleEnc8(L.mask):null;
+  });
+  return {
+    lights: state.auraLights.map(l=>({x:l.x,y:l.y,color:l.color,bright:l.bright,core:l.core,radius:l.radius,rays:l.rays,diffuse:l.diffuse})),
+    blend: state.auraBlendMode,
+    layers, masks,
+  };
+}
+function auraHistReset(){ auraHist=[auraSnap()]; auraHp=0; updAuraBtns(); }
+function pushAuraHist(){
+  auraHist=auraHist.slice(0,auraHp+1);
+  auraHist.push(auraSnap()); auraHp++;
+  if(auraHist.length>30){ auraHist.shift(); auraHp--; }
+  updAuraBtns();
+}
+function auraApplySnap(s){
+  const lc=document.getElementById('aura-light-canvas');
+  // 光源：キャッシュ再生成
+  state.auraLights = s.lights.map(l=>{
+    const off=document.createElement('canvas');
+    off.width=lc.width; off.height=lc.height;
+    drawOneLight(off.getContext('2d'), off, l.x, l.y, l.color, l.bright, l.core||18, l.radius, l.rays, l.diffuse);
+    return {...l,_cache:off};
+  });
+  state.auraPreview=null;
+  state.auraBlendMode=s.blend;
+  document.querySelectorAll('.blend-btn').forEach(b=>b.classList.toggle('active',b.dataset.blend===s.blend));
+  // レイヤー
+  Object.entries(s.layers).forEach(([k,cfg])=>{
+    const L=auraLayers[k];
+    Object.assign(L,cfg);
+    L.mask = s.masks[k] ? rleDec8(s.masks[k], auraW*auraH) : new Uint8ClampedArray(auraW*auraH).fill(255);
+    L._dirty=true;
+  });
+  updateLightList(); renderAuraLayers(); scheduleAura();
+}
+function auraUndo(){ if(auraHp>0){ auraHp--; auraApplySnap(auraHist[auraHp]); updAuraBtns(); } }
+function auraRedo(){ if(auraHp<auraHist.length-1){ auraHp++; auraApplySnap(auraHist[auraHp]); updAuraBtns(); } }
+function updAuraBtns(){
+  document.getElementById('aura-undo').disabled = auraHp<=0;
+  document.getElementById('aura-redo').disabled = auraHp>=auraHist.length-1;
+}
+document.getElementById('aura-undo').addEventListener('click',auraUndo);
+document.getElementById('aura-redo').addEventListener('click',auraRedo);
+document.addEventListener('keydown',e=>{
+  if(state.currentTab!=='aura')return;
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'){
+    e.preventDefault();
+    if(e.shiftKey) auraRedo(); else auraUndo();
+  }
+});
+
+// ═══════════════════════════════
+// AURA → BOARD（仕上げ画像をスナップ経由で渡す）
+// ═══════════════════════════════
+document.getElementById('aura-to-board').addEventListener('click',()=>{
+  const url=getAuraCompositeDataURL();
+  if(!url){ showToast('画像がありません'); return; }
+  const ok=window.ParsSnaps.add(url,'Aura仕上げ');
+  if(!ok) return; // スナップ満杯などはaddがトースト表示
+  switchTab('board');
+  showToast('Boardへ！写真パーツ→「スナップから」で選べます');
+});
 document.getElementById('aura-reset-all').addEventListener('click',()=>{
-  state.auraLights=[];state.auraPreview=null;updateLightList();scheduleAura();showToast('全光源リセット');
+  state.auraLights=[];state.auraPreview=null;updateLightList();scheduleAura();pushAuraHist();showToast('全光源リセット');
 });
 document.getElementById('aura-export').addEventListener('click',()=>{
   if(!state.imageLoaded){showToast('画像がありません');return;}
@@ -2563,9 +2711,9 @@ document.querySelectorAll('#panel-board [data-add]').forEach(b=>b.addEventListen
   const type=b.dataset.add;
   const el=Object.assign({id:state.nextId++,type,cell:null}, elDefaults());
   if(type==='image'){el.src=null;el.fit='cover';el.focus='center';}
-  else if(type==='title'){el.text='ふたつのリビングを持つ邸宅';}
-  else if(type==='spec'){el.text='SPEC\n2LDK+5room\n敷地面積 164.4㎡\n延床面積 134.35㎡';}
-  else{el.text='ここに説明文を入れます。';}
+  else if(type==='title'){el.text='（ここにキャッチコピーなどを記入）';}
+  else if(type==='spec'){el.text='SPEC\n（ここに商品詳細情報などを記入）';}
+  else{el.text='（ここにアピール文などを記入）';}
   state.els.push(el);state.selId=el.id;
   // default suggested range: a reasonable block (not a single tiny cell)
   const {c:cols,r:rows}=gridDims();
@@ -2995,11 +3143,48 @@ let brushMode='restore';   // 'restore' | 'erase' | 'wand'
 let brushShape='free';     // 'free' | 'line' | 'curve'
 let brushSize=40;
 let painting=false;
-let wandTol=32;            // 自動選択の色許容量
+let wandTol=18;            // 自動選択の色許容量（小さいほどピンポイント）
 let feather=0;             // フチぼかし半径(px)
-let lastEditSnapshot=null; // 直前操作前のeditMaskコピー（1段階undo）
+let lastEditSnapshot=null; // (旧・未使用)
 let lineStart=null, linePrev=null;  // 直線プレビュー
 let curvePts=[];                    // 曲線のアンカー点
+
+// ── ビュー（ズーム/パン）──
+let view={s:1,tx:0,ty:0};
+let panMode=false;
+let gesture=null;   // ピンチ中 {d0,s0,cx,cy,tx0,ty0}
+let panStart=null;
+const pointersMap=new Map();
+
+// ── アンドゥ/リドゥ：editMaskをRLE圧縮してスタック保持 ──
+// 値は-255/0/255の3種だけなのでRLEがよく効く（1ストローク数KB程度）
+let coHist=[], coHp=-1;
+function rleEncode(arr){
+  const out=[]; let i=0;
+  while(i<arr.length){ const v=arr[i]; let j=i+1; while(j<arr.length&&arr[j]===v)j++; out.push(v,j-i); i=j; }
+  return out;
+}
+function rleDecode(rle,len){
+  const arr=new Int16Array(len); let p=0;
+  for(let i=0;i<rle.length;i+=2){ const v=rle[i],n=rle[i+1]; if(v!==0) arr.fill(v,p,p+n); p+=n; }
+  return arr;
+}
+function coHistReset(){
+  coHist=[rleEncode(editMask)]; coHp=0; updCoBtns();
+}
+function pushCoHist(){
+  if(!editMask) return;
+  coHist=coHist.slice(0,coHp+1);
+  coHist.push(rleEncode(editMask)); coHp++;
+  if(coHist.length>30){ coHist.shift(); coHp--; }
+  updCoBtns();
+}
+function coUndo(){ if(coHp>0){ coHp--; editMask=rleDecode(coHist[coHp],imgW*imgH); recompose(); updCoBtns(); } }
+function coRedo(){ if(coHp<coHist.length-1){ coHp++; editMask=rleDecode(coHist[coHp],imgW*imgH); recompose(); updCoBtns(); } }
+function updCoBtns(){
+  $('co-undo').disabled = coHp<=0;
+  $('co-redo').disabled = coHp>=coHist.length-1;
+}
 
 // ── Environment check ──
 function checkEnv(){
@@ -3096,6 +3281,7 @@ async function runCutout(blob){
     $('drop').style.display='none';
     $('btn-save').disabled=false;
     $('btn-reset').disabled=false;
+    resetView(); coHistReset();
     $('stage-hint').textContent='消えすぎた部分は「戻す」でなぞって復活、余計な部分は「消す」でなぞって透明に。仕上がったら「スナップへ送る」でBoardでも使えます。';
     toast('背景をぬきました');
   }catch(e){
@@ -3189,7 +3375,6 @@ function blurAlpha(src,w,h,r){
 function wandEraseAt(ix,iy){
   if(!baseImageData) return;
   if(ix<0||ix>=imgW||iy<0||iy>=imgH) return;
-  saveEditSnapshot();
   const data=baseImageData.data;
   const seed=(iy*imgW+ix)*4;
   const sr=data[seed],sg=data[seed+1],sb=data[seed+2];
@@ -3211,12 +3396,11 @@ function wandEraseAt(ix,iy){
     if(y<imgH-1 &&!visited[p+imgW]) {visited[p+imgW]=1; stack.push(p+imgW);}
   }
   recompose();
-  toast(count>0?'にた色をまとめて消しました（取り消し可）':'消せる場所がありませんでした');
+  if(count>0) pushCoHist();
+  toast(count>0?'にた色をまとめて消しました（↶で取り消し可）':'消せる場所がありませんでした');
 }
 
-function saveEditSnapshot(){
-  lastEditSnapshot=editMask.slice();
-}
+function saveEditSnapshot(){ /* RLE履歴方式に移行済み */ }
 
 // ── Canvas drawing with bg preview ──
 function drawResult(){
@@ -3353,7 +3537,6 @@ function startPaint(e){
     $('curve-controls').style.display='flex';
     drawResult(); e.preventDefault(); return;
   }
-  saveEditSnapshot(); // ストローク開始時点を1段階undo用に保存
   painting=true; paintAt(p.x,p.y); lastPt=p; scheduleRecompose(); e.preventDefault();
 }
 function movePaint(e){
@@ -3368,17 +3551,17 @@ function endPaint(){
   if(brushShape==='line' && lineStart && linePrev){
     // ドラッグ距離がほぼゼロ（タップ）なら何もしない
     if(Math.hypot(linePrev.x-lineStart.x,linePrev.y-lineStart.y)>3){
-      saveEditSnapshot();
       paintLine(lineStart.x,lineStart.y,linePrev.x,linePrev.y);
       lineStart=null; linePrev=null;
       recompose();
-      toast('直線を引きました（取り消し可）');
+      pushCoHist();
+      toast('直線を引きました（↶で取り消し可）');
       return;
     }
     lineStart=null; linePrev=null; drawResult();
     return;
   }
-  if(painting){ painting=false; lastPt=null; recompose(); }
+  if(painting){ painting=false; lastPt=null; recompose(); pushCoHist(); }
 }
 
 // Throttle: recompose at most once per animation frame while dragging.
@@ -3463,12 +3646,12 @@ $('curve-back').addEventListener('click',()=>{
 });
 $('curve-commit').addEventListener('click',()=>{
   if(curvePts.length<2){ toast('点を2つ以上打ってください'); return; }
-  saveEditSnapshot();
   const pts=catmullRom(curvePts, 16);
   for(let i=1;i<pts.length;i++) paintLine(pts[i-1].x,pts[i-1].y,pts[i].x,pts[i].y);
   cancelCurve();
   recompose();
-  toast('曲線でなぞりました（取り消し可）');
+  pushCoHist();
+  toast('曲線でなぞりました（↶で取り消し可）');
 });
 $('brush-restore').addEventListener('click',()=>{ brushMode='restore'; setBrushBtns(); });
 $('brush-size').addEventListener('input',e=>{ brushSize=+e.target.value; flashBrushRingCenter(); });
@@ -3481,22 +3664,93 @@ $('feather').addEventListener('input',e=>{
   featherPending=true;
   requestAnimationFrame(()=>{ featherPending=false; recompose(); });
 });
-$('btn-undo-stroke').addEventListener('click',()=>{
-  if(!lastEditSnapshot){ toast('取り消せる操作がありません'); return; }
-  // 入れ替え方式：もう一度押すとやり直しになる
-  const cur=editMask; editMask=lastEditSnapshot; lastEditSnapshot=cur;
-  recompose(); toast('直前の操作を取り消しました（もう一度でやり直し）');
+$('co-undo').addEventListener('click',coUndo);
+$('co-redo').addEventListener('click',coRedo);
+document.addEventListener('keydown',e=>{
+  const p=document.getElementById('panel-cutout');
+  if(!p||!p.classList.contains('active'))return;
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'){
+    e.preventDefault();
+    if(e.shiftKey) coRedo(); else coUndo();
+  }
 });
 $('btn-clear-edits').addEventListener('click',()=>{
-  if(editMask){ saveEditSnapshot(); editMask.fill(0); recompose(); toast('手直しをリセットしました（取り消し可）'); }
+  if(editMask){ editMask.fill(0); recompose(); pushCoHist(); toast('手直しをリセットしました（↶で取り消し可）'); }
 });
+
+// ── ビュー適用（CSS transformで拡大縮小・パン。座標系はgetBoundingClientRectが自動追従）──
+function applyView(){
+  const cv=$('result-canvas');
+  view.s=Math.max(1,Math.min(8,view.s));
+  if(view.s===1){ view.tx=0; view.ty=0; }
+  const maxTx=(view.s-1)*cv.offsetWidth/2, maxTy=(view.s-1)*cv.offsetHeight/2;
+  view.tx=Math.max(-maxTx,Math.min(maxTx,view.tx));
+  view.ty=Math.max(-maxTy,Math.min(maxTy,view.ty));
+  cv.style.transformOrigin='center center';
+  cv.style.transform=`translate(${view.tx}px,${view.ty}px) scale(${view.s})`;
+  $('zoom-val').textContent=Math.round(view.s*100)+'%';
+}
+function resetView(){ view={s:1,tx:0,ty:0}; panMode=false; $('pan-toggle').classList.remove('on'); applyView(); }
+$('zoom-in').addEventListener('click',()=>{ view.s*=1.3; applyView(); });
+$('zoom-out').addEventListener('click',()=>{ view.s/=1.3; applyView(); });
+$('zoom-fit').addEventListener('click',resetView);
+$('pan-toggle').addEventListener('click',()=>{
+  panMode=!panMode;
+  $('pan-toggle').classList.toggle('on',panMode);
+  toast(panMode?'ドラッグで表示位置を移動できます':'ブラシに戻りました');
+});
+
+// ── ポインタ振り分け：2本指=ピンチ/パン、移動モード=パン、それ以外=描画 ──
+function onCoPointerDown(e){
+  if(!origCanvas)return;
+  pointersMap.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  try{ rcv.setPointerCapture(e.pointerId); }catch(_){}
+  if(pointersMap.size===2){
+    // ピンチ開始：進行中の描画・直線は破棄
+    painting=false; lastPt=null; lineStart=null; linePrev=null;
+    const [a,b]=[...pointersMap.values()];
+    gesture={ d0:Math.hypot(a.x-b.x,a.y-b.y), s0:view.s,
+      cx:(a.x+b.x)/2, cy:(a.y+b.y)/2, tx0:view.tx, ty0:view.ty };
+    drawResult();
+    e.preventDefault(); return;
+  }
+  if(panMode){ panStart={x:e.clientX,y:e.clientY,tx0:view.tx,ty0:view.ty}; e.preventDefault(); return; }
+  startPaint(e);
+}
+function onCoPointerMove(e){
+  if(pointersMap.has(e.pointerId)) pointersMap.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(gesture && pointersMap.size===2){
+    const [a,b]=[...pointersMap.values()];
+    const d=Math.hypot(a.x-b.x,a.y-b.y);
+    if(gesture.d0>0) view.s=gesture.s0*(d/gesture.d0);
+    const cx=(a.x+b.x)/2, cy=(a.y+b.y)/2;
+    view.tx=gesture.tx0+(cx-gesture.cx);
+    view.ty=gesture.ty0+(cy-gesture.cy);
+    applyView();
+    e.preventDefault(); return;
+  }
+  if(panStart){
+    view.tx=panStart.tx0+(e.clientX-panStart.x);
+    view.ty=panStart.ty0+(e.clientY-panStart.y);
+    applyView();
+    e.preventDefault(); return;
+  }
+  movePaint(e);
+}
+function onCoPointerUp(e){
+  pointersMap.delete(e.pointerId);
+  if(gesture){ if(pointersMap.size<2) gesture=null; return; }
+  if(panStart){ panStart=null; return; }
+  endPaint();
+}
 
 // canvas paint events — prefer Pointer Events; fall back to touch only if absent
 const rcv=$('result-canvas');
 if(window.PointerEvent){
-  rcv.addEventListener('pointerdown',startPaint);
-  rcv.addEventListener('pointermove',movePaint);
-  window.addEventListener('pointerup',endPaint);
+  rcv.addEventListener('pointerdown',onCoPointerDown);
+  rcv.addEventListener('pointermove',onCoPointerMove);
+  window.addEventListener('pointerup',onCoPointerUp);
+  window.addEventListener('pointercancel',onCoPointerUp);
   rcv.addEventListener('pointerleave',()=>{ if(!painting) $('brush-ring').classList.remove('show'); });
 }else{
   rcv.addEventListener('touchstart',startPaint,{passive:false});
@@ -3506,6 +3760,13 @@ if(window.PointerEvent){
   rcv.addEventListener('mousemove',movePaint);
   window.addEventListener('mouseup',endPaint);
 }
+// デスクトップ：ホイールでズーム
+rcv.addEventListener('wheel',e=>{
+  if(!origCanvas)return;
+  e.preventDefault();
+  view.s *= (e.deltaY<0 ? 1.12 : 1/1.12);
+  applyView();
+},{passive:false});
 
 // ── Save (transparent PNG always, ignoring preview bg) ──
 async function exportBlob(){
@@ -3539,6 +3800,7 @@ $('btn-save').addEventListener('click',async()=>{
 });
 $('btn-reset').addEventListener('click',()=>{
   cutoutBitmap=null; origCanvas=null; aiMask=null; editMask=null;
+  coHist=[]; coHp=-1; updCoBtns(); resetView();
   cutCanvas=null; cutCtx=null; baseImageData=null; workImageData=null;
   $('stage').classList.remove('show');
   $('drop').style.display='block';
