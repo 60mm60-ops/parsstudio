@@ -36,6 +36,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 /* ── Canvas area (Lumen/Aura) ── */
 .canvas-area{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at 30% 20%,rgba(138,94,40,0.05) 0%,transparent 60%),var(--bg);border-right:1px solid var(--border);overflow:hidden;min-height:0;position:relative;}
 .canvas-wrap{position:relative;width:100%;max-width:760px;aspect-ratio:4/3;overflow:hidden;border:1px solid var(--amber-dim);background:#1a1814;flex-shrink:0;}
+#aura-wrap{touch-action:none;}
 .drop-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;}
 .drop-icon{font-size:32px;opacity:0.25;}
 .drop-text{font-size:12px;letter-spacing:0.1em;color:#8a6840;text-align:center;}
@@ -245,14 +246,6 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
 #panel-board .el-del{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:18px;line-height:1;padding:4px 6px;}
 #panel-board .el-del:hover{color:var(--red);}
 
-#panel-board .mini-wrap{margin-top:10px;}
-#panel-board .mini-grid{display:grid;gap:2px;background:var(--border);border:1px solid var(--border);user-select:none;}
-#panel-board .mini-cell{background:#fff;aspect-ratio:1/0.82;display:flex;align-items:center;justify-content:center;font-size:8px;color:#b3a894;cursor:pointer;}
-#panel-board .mini-cell.hi{background:var(--cell-hi);}
-#panel-board .mini-cell.sel{background:var(--cell-sel);color:var(--amber);font-weight:bold;}
-#panel-board .mini-cell.occ{background:repeating-linear-gradient(45deg,#e8e2d8,#e8e2d8 3px,#ddd5c8 3px,#ddd5c8 6px);color:#a89a86;}
-#panel-board .mini-cell.own{background:#b9c9d4;color:#4a6579;font-weight:bold;}
-#panel-board .mini-cell.sel-bad{background:rgba(192,57,43,0.30);color:var(--red);font-weight:bold;}
 #panel-board .place-note{font-size:11px;color:var(--text-dim);margin-top:8px;text-align:center;}
 #panel-board .place-btns{display:flex;gap:6px;margin-top:8px;}
 #panel-board .place-btns .btn{flex:1;padding:12px 4px;font-size:11px;justify-content:center;}
@@ -272,7 +265,7 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
 #panel-board .pd-box{flex:1;}
 
 #panel-board .board-preview-area{display:flex;align-items:center;justify-content:center;padding:24px;background:#ddd8d0;overflow:hidden;position:relative;}
-#panel-board .board-outer{position:relative;box-shadow:0 16px 40px rgba(0,0,0,0.12);background:var(--c-base);overflow:hidden;flex-shrink:0;}
+#panel-board .board-outer{position:relative;box-shadow:0 16px 40px rgba(0,0,0,0.12);background:var(--c-base);overflow:hidden;flex-shrink:0;touch-action:none;}
 #panel-board .cells-layer{position:absolute;inset:0;z-index:1;}
 #panel-board .cell-hit{position:absolute;border:0.5px solid rgba(138,94,40,0.10);}
 #panel-board .cell-hit.hi{background:var(--cell-hi);}
@@ -290,14 +283,6 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
 #panel-board .tile-text{line-height:1.75;color:var(--text);opacity:0.9;white-space:pre-wrap;font-family:var(--font-body);letter-spacing:0.03em;}
 #panel-board .tile-spec{line-height:1.7;font-family:var(--font-body);letter-spacing:0.02em;}
 
-#panel-board .detail-panel{position:fixed;z-index:500;background:var(--panel);border-top:1px solid var(--border);box-shadow:0 -8px 30px rgba(0,0,0,0.15);left:0;right:0;bottom:-110%;max-height:72vh;overflow-y:auto;transition:bottom 0.26s cubic-bezier(.2,.7,.3,1);padding:18px 20px 44px;}
-#panel-board .detail-panel.open{bottom:0;}
-@media(min-width:1000px){
-  #panel-board .detail-panel{left:auto;top:0;bottom:auto;right:-380px;width:350px;height:100vh;max-height:none;border-top:none;border-left:1px solid var(--border);box-shadow:-8px 0 30px rgba(0,0,0,0.10);transition:right 0.26s cubic-bezier(.2,.7,.3,1);}
-  #panel-board .detail-panel.open{right:0;bottom:auto;}
-}
-#panel-board .dp-title{font-size:14px;font-weight:700;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'DM Mono',monospace;letter-spacing:0.04em;}
-#panel-board .dp-close{background:none;border:none;font-size:26px;color:var(--text-dim);cursor:pointer;line-height:1;padding:4px 8px;}
 #panel-board .dp-sec{margin-bottom:18px;}
 #panel-board .dp-label{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
 #panel-board .dp-label::after{content:'';flex:1;height:1px;background:var(--border);}
@@ -418,7 +403,7 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
   <div class="tabs">
     <button class="tab active" data-tab="cutout">Cutout</button>
     <button class="tab" data-tab="lumen">Lumen</button>
-    <button class="tab disabled" data-tab="aura">Aura</button>
+    <button class="tab" data-tab="aura">Aura</button>
     <button class="tab" data-tab="board">Board</button>
   </div>
 </header>
@@ -503,7 +488,7 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
         <div class="canvas-wrap" id="aura-wrap">
           <div class="drop-placeholder" id="aura-placeholder">
             <div class="drop-icon">◉</div>
-            <div class="drop-text">Lumenで画像を読み込んでください<em>またはここをクリックして直接開く</em></div>
+            <div class="drop-text">ここをクリックして画像を開く<em>Lumenから渡すこともできます</em></div>
           </div>
           <canvas class="main-canvas" id="aura-base-canvas"></canvas>
           <canvas class="main-canvas" id="aura-light-canvas" style="mix-blend-mode:screen;"></canvas>
@@ -514,8 +499,8 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
         </div>
         <div class="aura-maskbar" id="aura-maskbar">
           <span class="mb-label" id="aura-maskbar-name">レイヤー編集中</span>
-          <button class="cmp-btn active" id="amask-add">足す</button>
-          <button class="cmp-btn" id="amask-del">消す</button>
+          <button class="cmp-btn" id="amask-add">足す</button>
+          <button class="cmp-btn active" id="amask-del">消す</button>
           <span class="mb-label">太さ</span>
           <input type="range" id="amask-size" min="2" max="220" step="2" value="60">
           <button class="cmp-btn" id="amask-done">✓ 完了</button>
@@ -746,10 +731,7 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
 
         <div class="s-section" id="place-section" style="display:none;">
           <div class="s-label">② セルに置く</div>
-          <div class="s-note" id="place-hint">素材を選んで、下のマス目で範囲を選ぶ。ボード上を直接ドラッグしてもOK。</div>
-          <div class="mini-wrap">
-            <div class="mini-grid" id="mini-grid"></div>
-          </div>
+          <div class="s-note" id="place-hint">プレビューのボード上を直接ドラッグして範囲を選択（タップで1マス）。選んだら「ここに置く」。</div>
           <div class="place-note" id="place-note">範囲を選択</div>
           <div class="place-btns">
             <button class="btn primary" id="btn-place">ここに置く</button>
@@ -759,6 +741,8 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
         <div class="s-section" id="editor-section" style="display:none;">
           <div class="s-label">素材の中身</div>
           <div id="editor-body"></div>
+          <div class="s-label" style="margin-top:16px;">詳細設定</div>
+          <div id="dp-body"></div>
         </div>
 
         <div class="s-section">
@@ -795,11 +779,6 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
           <svg class="flow-svg" id="flow-svg"><path id="flow-path" d=""/><g id="flow-markers"></g></svg>
         </div>
       </div>
-    </div>
-
-    <div class="detail-panel" id="detail-panel">
-      <div class="dp-title"><span id="dp-name">詳細設定</span><button class="dp-close" id="dp-close">×</button></div>
-      <div id="dp-body"></div>
     </div>
   </div>
 
@@ -970,11 +949,13 @@ function loadImageFile(file) {
   reader.onload = ev => {
     const img = new Image();
     img.onload = () => applyLoadedImage(img, name, file.type.split('/')[1].toUpperCase(), null);
+    img.onerror = () => showToast('画像の読み込みに失敗しました');
     img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
 }
 
+// img は HTMLImageElement でも canvas でもOK（width/height と drawImage さえ効けば良い）
 function applyLoadedImage(img, name, fmtLabel, hasAlphaHint) {
   state.fileName = name || 'image';
   state.originalImage = img;
@@ -1024,8 +1005,6 @@ function applyLoadedImage(img, name, fmtLabel, hasAlphaHint) {
   document.getElementById('lumen-meta-size').textContent = `${img.width} × ${img.height}`;
   document.getElementById('lumen-meta-fmt').textContent = (fmtLabel||'IMG') + (state.hasAlpha?' ・透過':'');
 
-  document.querySelectorAll('[data-tab="aura"]').forEach(t=>t.classList.remove('disabled'));
-
   // 新規画像を読み込んだらAuraの確定光源・プレビューをクリア（座標ズレ防止）
   state.auraLights = [];
   state.auraPreview = null;
@@ -1033,6 +1012,12 @@ function applyLoadedImage(img, name, fmtLabel, hasAlphaHint) {
 
   applyLumen();
   lumHistReset();
+
+  // Auraタブ滞在中に直接開いた場合は、その場でAuraへ転送する（②）
+  if (state.currentTab === 'aura') {
+    setTimeout(()=>transferLumenToAura(), 30);
+  }
+
   showToast('画像を読み込みました');
 }
 
@@ -1304,7 +1289,7 @@ const AURA_BLENDS=[['source-over','通常'],['screen','スクリーン'],['overl
 let auraW=0, auraH=0;
 let auraImageCanvas=null;
 let maskEditKey=null;
-let maskVal=255;
+let maskVal=0;
 let maskBrush=60;
 let maskLastPt=null, maskPainting=false;
 
@@ -1459,14 +1444,20 @@ function drawOneLight(ctx, canvas, lx, ly, color, intensity, core, radius, rayCo
 }
 
 const auraWrap = document.getElementById('aura-wrap');
+let auraDragging = false;
+
+// object-fit:contain のレターボックスを考慮した座標変換（③の座標ズレ修正）
 function getAuraPixelPos(clientX, clientY) {
   const lc = document.getElementById('aura-light-canvas');
   const rect = auraWrap.getBoundingClientRect();
-  const dispW = lc.offsetWidth || rect.width;
-  const dispH = lc.offsetHeight || rect.height;
+  const cw = lc.width || 1, ch = lc.height || 1;
+  const scale = Math.min(rect.width / cw, rect.height / ch);
+  const dw = cw * scale, dh = ch * scale;
+  const ox = rect.left + (rect.width - dw) / 2;
+  const oy = rect.top + (rect.height - dh) / 2;
   return {
-    x: (clientX - rect.left) / dispW * lc.width,
-    y: (clientY - rect.top) / dispH * lc.height,
+    x: (clientX - ox) / dw * cw,
+    y: (clientY - oy) / dh * ch,
     dispX: Math.round(clientX - rect.left),
     dispY: Math.round(clientY - rect.top),
   };
@@ -1480,18 +1471,26 @@ function updateAuraPreview(clientX, clientY) {
 }
 auraWrap.addEventListener('pointerdown', e => {
   if (!state.imageLoaded) { document.getElementById('file-input').value=''; document.getElementById('file-input').click(); return; }
-  auraWrap.setPointerCapture(e.pointerId);
+  try{ auraWrap.setPointerCapture(e.pointerId); }catch(_){}
+  auraDragging = true;
   if (maskEditKey){ maskPointer(e,'down'); e.preventDefault(); return; }
   updateAuraPreview(e.clientX, e.clientY);
+  e.preventDefault();
 });
 auraWrap.addEventListener('pointermove', e => {
-  if (!state.imageLoaded || e.buttons !== 1) return;
+  if (!state.imageLoaded || !auraDragging) return;
   if (maskEditKey){ maskPointer(e,'move'); e.preventDefault(); return; }
   updateAuraPreview(e.clientX, e.clientY);
+  e.preventDefault();
 });
 auraWrap.addEventListener('pointerup', e => {
-  auraWrap.releasePointerCapture(e.pointerId);
+  try{ auraWrap.releasePointerCapture(e.pointerId); }catch(_){}
+  auraDragging = false;
   if (maskEditKey){ maskPointer(e,'up'); return; }
+});
+auraWrap.addEventListener('pointercancel', e => {
+  auraDragging = false;
+  if (maskEditKey){ maskPointer(e,'up'); }
 });
 auraWrap.addEventListener('click', e => {
   if (!state.imageLoaded) return;
@@ -1664,12 +1663,16 @@ function renderAuraLayers(){
 }
 
 function enterMaskEdit(key,label){
-  if(!state.imageLoaded){ showToast('先にLumenで画像を読み込んでください'); return; }
+  if(!state.imageLoaded){ showToast('先に画像を読み込んでください'); return; }
   maskEditKey=key;
+  // 初期マスクは全面ON（255）なので、まず「消す」から始めるのが自然（③）
+  maskVal=0;
+  document.getElementById('amask-del').classList.add('active');
+  document.getElementById('amask-add').classList.remove('active');
   document.getElementById('aura-maskbar').classList.add('show');
   document.getElementById('aura-maskbar-name').textContent=label+' を編集中';
   renderAuraLayers();
-  showToast('キャンバス上をなぞってレイヤーを足す/消す');
+  showToast('「消す」でなぞって不要な所を除去。「足す」で復活できます');
 }
 function exitMaskEdit(){
   maskEditKey=null; maskPainting=false; maskLastPt=null;
@@ -1866,7 +1869,20 @@ window.ParsBridge = {
   loadIntoLumen(dataURL, name, hasAlpha){
     const img = new Image();
     img.onload = ()=> applyLoadedImage(img, name||'handoff', hasAlpha?'PNG':'IMG', !!hasAlpha);
+    img.onerror = ()=> showToast('画像の受け渡しに失敗しました');
     img.src = dataURL;
+  },
+  // ①⑥修正: canvasを直接渡す（dataURL→Imageの非同期経路を使わない）
+  loadCanvasIntoLumen(canvas, name, hasAlpha){
+    try{
+      if(!canvas || !canvas.width){ showToast('画像がありません'); return false; }
+      applyLoadedImage(canvas, name||'handoff', hasAlpha?'PNG':'IMG', !!hasAlpha);
+      return true;
+    }catch(e){
+      console.error('loadCanvasIntoLumen failed', e);
+      showToast('画像の受け渡しに失敗しました: '+(e&&e.message?e.message:e));
+      return false;
+    }
   },
 };
 
@@ -2010,7 +2026,7 @@ function restoreState(s){
   state.els=o.els.map(normalizeEl); state.size=o.size; state.grid=o.grid;
   state.taste=o.taste; state.colorMode=o.colorMode; state.accent=o.accent; state.preset=o.preset;
   state.selId=null; state.pickRange=null;
-  syncControlsFromState(); computeColors(); render(); renderEditor(); renderDetail();
+  syncControlsFromState(); computeColors(); render(); renderEditor();
 }
 function undo(){ if(hp>0){ hp--; restoreState(hist[hp]); updHistBtns(); persistBoard(); } }
 function redo(){ if(hp<hist.length-1){ hp++; restoreState(hist[hp]); updHistBtns(); persistBoard(); } }
@@ -2151,7 +2167,7 @@ function render(){
   outer.style.background='var(--c-base)';
   outer.style.setProperty('--font-display', TASTES[state.taste].display);
   outer.style.setProperty('--font-body', TASTES[state.taste].body);
-  renderCells(); renderTiles(); renderMini(); renderList();
+  renderCells(); renderTiles(); renderList();
   if(state.showFlow) calcFlow(); else clearFlow();
 }
 
@@ -2168,10 +2184,12 @@ function renderCells(){
   const occ=occupiedSet();
   const own=selfSet();
   const badSel = range && rangeOverlaps(range,occ);
+  // ④: 素材選択中はグリッドを自動で見やすく表示（ミニグリッド廃止に伴う統合）
+  const guideOn = state.showGuide || !!cur();
   for(let r=0;r<m.rows;r++)for(let c=0;c<m.cols;c++){
     const d=document.createElement('div');
     d.className='cell-hit';
-    if(state.showGuide) d.style.borderColor='rgba(138,94,40,0.18)';
+    if(guideOn) d.style.borderColor='rgba(138,94,40,0.22)';
     if(occ.has(r+','+c)) d.style.background='rgba(138,94,40,0.05)';
     else if(own.has(r+','+c)) d.style.background='rgba(120,155,180,0.18)';
     let inR=false;
@@ -2182,7 +2200,7 @@ function renderCells(){
     d.style.left=p.left;d.style.top=p.top;d.style.width=p.width;d.style.height=p.height;
     d.dataset.c=c;d.dataset.r=r;
     layer.appendChild(d);
-    if(state.showGuide){
+    if(guideOn){
       const n=document.createElement('div');n.className='cell-num';n.textContent=`${r+1}-${c+1}`;
       n.style.left=`calc(${p.left} + 2px)`;n.style.top=`calc(${p.top} + 2px)`;layer.appendChild(n);
     }
@@ -2332,62 +2350,13 @@ function tryPlace(el, range){
   return true;
 }
 
-function renderMini(){
-  const g=document.getElementById('mini-grid');
-  const {c:cols,r:rows}=gridDims();
-  g.style.gridTemplateColumns=`repeat(${cols},1fr)`;
-  g.innerHTML='';
-  const occ=occupiedSet();
-  const own=selfSet();
-  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
-    const d=document.createElement('div');d.className='mini-cell';d.textContent=`${r+1}-${c+1}`;
-    d.dataset.c=c;d.dataset.r=r;
-    if(occ.has(r+','+c)) d.classList.add('occ');
-    else if(own.has(r+','+c)) d.classList.add('own');
-    const range=state.pickRange;
-    if(range){const cA=Math.min(range.c0,range.c1),cB=Math.max(range.c0,range.c1),rA=Math.min(range.r0,range.r1),rB=Math.max(range.r0,range.r1);if(c>=cA&&c<=cB&&r>=rA&&r<=rB)d.classList.add(rangeOverlaps(range,occ)?'sel-bad':'sel');}
-    g.appendChild(d);
-  }
-}
-let miniPick=false,miniStart=null,miniMoved=false,tapAnchor=null;
-document.getElementById('mini-grid').addEventListener('pointerdown',e=>{
-  const c=e.target.closest('.mini-cell');if(!c)return;
-  miniPick=true;miniMoved=false;miniStart={c:+c.dataset.c,r:+c.dataset.r};
-  document.getElementById('mini-grid').setPointerCapture(e.pointerId);
-});
-document.getElementById('mini-grid').addEventListener('pointermove',e=>{
-  if(!miniPick)return;
-  const el=document.elementFromPoint(e.clientX,e.clientY);const c=el&&el.closest('.mini-cell');if(!c)return;
-  const cc=+c.dataset.c, rr=+c.dataset.r;
-  if(cc!==miniStart.c||rr!==miniStart.r) miniMoved=true;
-  if(miniMoved){
-    state.pickRange={c0:miniStart.c,r0:miniStart.r,c1:cc,r1:rr};
-    tapAnchor=null;
-    updatePlaceNote();renderMini();renderCells();
-  }
-});
-document.getElementById('mini-grid').addEventListener('pointerup',e=>{
-  if(!miniPick)return;
-  miniPick=false;
-  if(!miniMoved){
-    if(tapAnchor){
-      state.pickRange={c0:tapAnchor.c,r0:tapAnchor.r,c1:miniStart.c,r1:miniStart.r};
-      tapAnchor=null;
-    }else{
-      tapAnchor={...miniStart};
-      state.pickRange={c0:miniStart.c,r0:miniStart.r,c1:miniStart.c,r1:miniStart.r};
-    }
-    updatePlaceNote();renderMini();renderCells();
-  }
-});
 function updatePlaceNote(){
   const n=document.getElementById('place-note');
-  if(!state.pickRange){n.textContent='タップで始点 → もう一度タップで終点';return;}
+  if(!state.pickRange){n.textContent='ボード上をタップ／ドラッグで範囲を選択';return;}
   if(rangeOverlaps(state.pickRange,occupiedSet())){
     n.innerHTML=`<b style="color:var(--red)">他の素材と重なっています</b>`;return;
   }
-  const hint = tapAnchor ? ' （終点をタップ）' : '';
-  n.innerHTML=`配置先: <b style="color:var(--amber)">${cellLabel(state.pickRange)}</b>${hint}`;
+  n.innerHTML=`配置先: <b style="color:var(--amber)">${cellLabel(state.pickRange)}</b>`;
 }
 
 const outer=document.getElementById('board-outer');
@@ -2418,14 +2387,15 @@ outer.addEventListener('pointerdown',e=>{
     mode='select';boxStart=cc;
     state.pickRange={c0:cc.c,r0:cc.r,c1:cc.c,r1:cc.r};
     outer.setPointerCapture(e.pointerId);
-    updatePlaceNote();renderCells();renderMini();
+    updatePlaceNote();renderCells();
+    e.preventDefault();
   }
 });
 outer.addEventListener('pointermove',e=>{
   if(mode==='select'&&boxStart){
     const p=evtToNative(e);const cc=cellAtPx(p.x,p.y);
     state.pickRange={c0:boxStart.c,r0:boxStart.r,c1:cc.c,r1:cc.r};
-    updatePlaceNote();renderCells();renderMini();
+    updatePlaceNote();renderCells();
   }else if(mode==='move'&&dragTile){
     if(dragStartXY && Math.hypot(e.clientX-dragStartXY.x, e.clientY-dragStartXY.y)>8) dragMoved=true;
     if(!dragMoved) return;
@@ -2445,7 +2415,10 @@ outer.addEventListener('pointerup',e=>{
     if(!dragMoved){
       state.pickRange={...dragTile.cell};
       mode=null;dragTile=null;boxStart=null;
-      render();renderEditor();openDetail();
+      render();renderEditor();
+      // ⑦: 詳細はサイドバー内に統合したので、そこへスクロールして誘導
+      const es=document.getElementById('editor-section');
+      if(es && es.style.display!=='none') es.scrollIntoView({behavior:'smooth',block:'nearest'});
       return;
     }
     const target={...dragTile.cell};
@@ -2486,7 +2459,7 @@ document.querySelectorAll('#panel-board [data-add]').forEach(b=>b.addEventListen
   state.pickRange={c0:0,r0:0,c1:dw,r1:dh};
   render();renderEditor();showPlaceSection();updatePlaceNote();
   pushHist(true);
-  toast('素材を追加。範囲を選んで「ここに置く」');
+  toast('素材を追加。ボード上で範囲を選んで「ここに置く」');
 }));
 
 function renderList(){
@@ -2507,7 +2480,7 @@ function renderList(){
     wrap.appendChild(d);
   });
   wrap.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
-    const id=+b.dataset.del;state.els=state.els.filter(x=>x.id!==id);if(state.selId===id){state.selId=null;state.pickRange=null;closeDetail();}
+    const id=+b.dataset.del;state.els=state.els.filter(x=>x.id!==id);if(state.selId===id){state.selId=null;state.pickRange=null;}
     render();renderEditor();pushHist(true);
   }));
 }
@@ -2519,7 +2492,7 @@ function showPlaceSection(){
 function renderEditor(){
   const body=document.getElementById('editor-body');
   const el=cur();
-  if(!el){document.getElementById('editor-section').style.display='none';return;}
+  if(!el){document.getElementById('editor-section').style.display='none';document.getElementById('place-section').style.display='none';renderDetail();return;}
   document.getElementById('editor-section').style.display='block';
   if(el.type==='image'){
     body.innerHTML=`
@@ -2546,6 +2519,7 @@ function renderEditor(){
       <textarea id="ed-text" style="min-height:${el.type==='text'||el.type==='spec'?'80px':'44px'}">${esc(el.text)}</textarea></div>`;
     document.getElementById('ed-text').addEventListener('input',e=>{el.text=e.target.value;renderTiles();renderList();pushHist();});
   }
+  renderDetail();
 }
 
 let pendingImgEl=null;
@@ -2579,7 +2553,7 @@ function applyPicked(dataURL, msg){
   pendingImgEl.src=dataURL;
   pendingImgEl=null;
   closeSrcChooser();
-  render();renderEditor();renderDetail();
+  render();renderEditor();
   pushHist(true);
   toast(msg||'写真を配置しました');
 }
@@ -2620,24 +2594,16 @@ function calcFlow(){
 }
 function clearFlow(){document.getElementById('flow-path').setAttribute('d','');document.getElementById('flow-markers').innerHTML='';}
 
-function openDetail(){
-  if(!cur()) return;
-  renderDetail();
-  document.getElementById('detail-panel').classList.add('open');
-}
-function closeDetail(){ document.getElementById('detail-panel').classList.remove('open'); }
-document.getElementById('dp-close').addEventListener('click', closeDetail);
 function paletteColors(){
   const cs=getComputedStyle(document.documentElement);
   return [cs.getPropertyValue('--c-accent').trim(), cs.getPropertyValue('--c-main').trim(), '#2e2418'];
 }
+// ⑦: 詳細設定はサイドバー内（#dp-body）にインライン描画。オーバーレイは廃止。
 function renderDetail(){
   const el=cur();
   const body=document.getElementById('dp-body');
-  if(!el){ body.innerHTML=''; closeDetail(); return; }
+  if(!el){ body.innerHTML=''; return; }
   normalizeEl(el);
-  document.getElementById('dp-name').textContent =
-    (el.type==='image'?'写真':el.type==='title'?'見出し':el.type==='spec'?'スペック':'文章')+' の詳細';
   if(el.type==='image'){
     body.innerHTML=`
       <div class="dp-sec"><div class="dp-label">角丸</div>
@@ -2660,10 +2626,13 @@ function renderDetail(){
     return;
   }
   const pal=paletteColors();
+  // ⑤: 各セルの小さい四角を、対応する位置（左上・中央・右下…）に表示する
   const alignCells=['top','middle','bottom'].map(v=>
-    ['left','center','right'].map(h=>
-      `<div class="align-cell ${el.alignH===h&&el.alignV===v?'on':''}" data-ah="${h}" data-av="${v}"><i></i></div>`
-    ).join('')
+    ['left','center','right'].map(h=>{
+      const jc=h==='left'?'flex-start':h==='right'?'flex-end':'center';
+      const ai=v==='top'?'flex-start':v==='bottom'?'flex-end':'center';
+      return `<div class="align-cell ${el.alignH===h&&el.alignV===v?'on':''}" data-ah="${h}" data-av="${v}" style="justify-content:${jc};align-items:${ai};padding:5px;"><i></i></div>`;
+    }).join('')
   ).join('');
   body.innerHTML=`
     <div class="dp-sec"><div class="dp-label">配置</div><div class="align-grid">${alignCells}</div></div>
@@ -3567,11 +3536,18 @@ $('btn-reset').addEventListener('click',()=>{
   $('warn').classList.remove('show');
 });
 
+// ①⑥修正: dataURL→Imageの非同期経路をやめ、canvasを直接Lumenへ渡す
 $('btn-tolumen').addEventListener('click',()=>{
   if(!cutCanvas){ toast('先に切り抜いてください'); return; }
-  const url=cutCanvas.toDataURL('image/png');
-  if(window.ParsBridge && window.ParsBridge.loadIntoLumen){
-    window.ParsBridge.loadIntoLumen(url, 'cutout', true);
+  if(window.ParsBridge && window.ParsBridge.loadCanvasIntoLumen){
+    const ok=window.ParsBridge.loadCanvasIntoLumen(cutCanvas, 'cutout', true);
+    if(ok){
+      window.ParsBridge.goTab('lumen');
+      toast('Lumenへ渡しました');
+    }
+  }else if(window.ParsBridge && window.ParsBridge.loadIntoLumen){
+    // 旧経路フォールバック
+    window.ParsBridge.loadIntoLumen(cutCanvas.toDataURL('image/png'), 'cutout', true);
     window.ParsBridge.goTab('lumen');
   }
 });
