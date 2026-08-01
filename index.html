@@ -32,12 +32,12 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .workspace{flex:1;display:flex;flex-direction:column;min-height:0;}
 .tab-panel{display:none;flex:1;min-height:0;}
 .tab-panel.active{display:flex;}
-#panel-board.active,#panel-cutout.active{flex-direction:column;}
+#panel-board.active,#panel-cutout.active,#panel-lumen.active,#panel-aura.active{flex-direction:column;}
 .tool-layout{display:grid;grid-template-columns:1fr 320px;flex:1;min-height:0;overflow:hidden;}
 
 /* ── Canvas area (Lumen/Aura) ── */
 .canvas-area{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at 30% 20%,rgba(138,94,40,0.05) 0%,transparent 60%),var(--bg);border-right:1px solid var(--border);overflow:hidden;min-height:0;position:relative;}
-.canvas-wrap{position:relative;width:100%;max-width:760px;aspect-ratio:4/3;overflow:hidden;border:1px solid var(--amber-dim);background:#1a1814;flex-shrink:0;}
+.canvas-wrap{position:relative;width:100%;max-width:760px;aspect-ratio:4/3;overflow:hidden;border:1px solid var(--amber-dim);background:#ffffff;flex-shrink:0;}
 .drop-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;}
 .drop-icon{font-size:32px;opacity:0.25;}
 .drop-text{font-size:11px;letter-spacing:0.16em;color:#8a6840;text-transform:uppercase;text-align:center;}
@@ -87,7 +87,8 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border:none;border-ra
 .sidebar-footer{padding:16px 20px;margin-top:auto;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;flex-shrink:0;}
 
 /* compare bar */
-.compare-bar{display:flex;gap:6px;margin-bottom:10px;}
+.compare-bar{display:flex;gap:6px;margin-bottom:10px;align-items:center;min-height:28px;}
+.compare-bar .ct-title{margin-right:auto;}
 .cmp-btn{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:6px 12px;border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer;transition:all 0.18s;}
 .cmp-btn.active{border-color:var(--amber);color:var(--amber);background:var(--amber-glow);}
 
@@ -170,6 +171,7 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
 #file-input{display:none;}
 #board-file-input{display:none;}
 #cutout-file-input{display:none;}
+#aura-file-input{display:none;}
 
 .preview-modal{
   position:fixed;
@@ -243,6 +245,7 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
 @media(max-width:768px){
   .tool-layout{grid-template-columns:1fr;overflow:auto;}
   .canvas-area{border-right:none;border-bottom:1px solid var(--border);padding:8px;}
+
   .sidebar{overflow-y:visible;}
   header{padding:10px 14px;gap:8px;}
   .logo{font-size:16px;}
@@ -416,25 +419,28 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
    CUTOUT (scoped: #panel-cutout)
    ══════════════════════════════════════════ */
 #panel-cutout{overflow:hidden;}
-#panel-cutout .cutout-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;gap:20px;overflow-y:auto;min-height:0;}
-#panel-cutout .cutout-toolbar{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid var(--border);background:var(--panel);flex-shrink:0;gap:8px;width:100%;}
-#panel-cutout .ct-title{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;}
-#panel-cutout .head-actions{display:flex;gap:6px;}
-#panel-cutout .btn{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;padding:9px 16px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all 0.2s;text-transform:uppercase;white-space:nowrap;}
-#panel-cutout .btn:hover:not(:disabled){border-color:var(--amber-dim);color:var(--amber);}
-#panel-cutout .btn.primary{border-color:var(--amber);background:var(--amber-glow);color:var(--amber);}
-#panel-cutout .btn.primary:hover:not(:disabled){background:rgba(138,94,40,0.18);}
-#panel-cutout .btn:disabled{opacity:0.35;cursor:default;}
+#panel-cutout .cutout-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:8px;gap:0;overflow-y:auto;min-height:0;}
+.cutout-toolbar{display:flex;flex:0 0 auto;align-items:center;justify-content:space-between;padding:8px 14px;min-height:52px;height:52px;box-sizing:border-box;flex-wrap:nowrap;overflow-x:auto;border-bottom:1px solid var(--border);background:var(--panel);flex-shrink:0;gap:8px;width:100%;}
+.ct-title{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;}
+.head-actions{display:flex;gap:6px;flex-shrink:0;}
+.btn{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;padding:9px 16px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all 0.2s;text-transform:uppercase;white-space:nowrap;}
+.btn:hover:not(:disabled){border-color:var(--amber-dim);color:var(--amber);}
+.btn.primary{border-color:var(--amber);background:var(--amber-glow);color:var(--amber);}
+.btn.primary:hover:not(:disabled){background:rgba(138,94,40,0.18);}
+.btn:disabled{opacity:0.35;cursor:default;}
 
 /* dropzone */
-#panel-cutout .drop{width:100%;max-width:520px;border:1.5px dashed var(--border);background:rgba(255,255,255,0.4);padding:48px 24px;text-align:center;cursor:pointer;transition:all 0.2s;}
+#panel-cutout .drop{position:relative;width:100%;max-width:760px;aspect-ratio:4/3;
+  border:1px solid var(--amber-dim);background:#ffffff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  text-align:center;cursor:pointer;transition:all 0.2s;flex-shrink:0;}
 #panel-cutout .drop:hover,#panel-cutout .drop.over{border-color:var(--amber);background:var(--amber-glow);}
 #panel-cutout .drop-ico{font-size:34px;color:var(--amber-dim);margin-bottom:14px;}
-#panel-cutout .drop-t{font-size:14px;color:var(--text);letter-spacing:0.05em;margin-bottom:6px;}
-#panel-cutout .drop-s{font-size:10px;color:var(--text-dim);line-height:1.7;letter-spacing:0.04em;}
+#panel-cutout .drop-t{font-size:11px;color:#8a6840;letter-spacing:0.16em;text-transform:uppercase;margin-bottom:4px;}
+#panel-cutout .drop-s{font-size:9px;color:#6a5030;line-height:1.7;letter-spacing:0.16em;}
 
 /* stage */
-#panel-cutout .stage{width:100%;max-width:640px;display:none;flex-direction:column;gap:16px;}
+#panel-cutout .stage{width:100%;max-width:760px;display:none;flex-direction:column;gap:16px;}
 #panel-cutout .stage.show{display:flex;}
 #panel-cutout .cutout-canvas-wrap{position:relative;width:100%;background:
   repeating-conic-gradient(#e8e2d8 0% 25%, #f3efe8 0% 50%) 0 0 / 22px 22px;
@@ -513,7 +519,7 @@ document.addEventListener('gesturestart',function(e){e.preventDefault();},{passi
   <div class="tabs">
     <button class="tab active" data-tab="cutout">Cutout</button>
     <button class="tab" data-tab="lumen">Lumen</button>
-    <button class="tab disabled" data-tab="aura">Aura</button>
+    <button class="tab" data-tab="aura">Aura</button>
     <button class="tab" data-tab="board">Board</button>
   </div>
   <button class="btn-open" id="open-btn">画像を開く</button>
@@ -523,17 +529,23 @@ document.addEventListener('gesturestart',function(e){e.preventDefault();},{passi
 
   <!-- ══ LUMEN ══ -->
   <div class="tab-panel" id="panel-lumen">
+    <div class="cutout-toolbar">
+      <span class="ct-title">Lumen — 色調補正</span>
+      <div class="head-actions">
+        <button class="btn" id="lumen-undo" title="元に戻す" disabled>↶</button>
+        <button class="btn" id="lumen-redo" title="やり直す" disabled>↷</button>
+        <button class="btn" id="lumen-reset">やり直す</button>
+        <button class="btn primary" id="lumen-export">保存</button>
+      </div>
+    </div>
     <div class="tool-layout">
       <div class="canvas-area">
         <div class="compare-bar">
           <button class="cmp-btn active" id="cmp-edit">編集中</button>
           <button class="cmp-btn" id="cmp-orig">元画像</button>
-          <button class="cmp-btn" id="lumen-undo" disabled>↶</button>
-          <button class="cmp-btn" id="lumen-redo" disabled>↷</button>
         </div>
         <div class="canvas-wrap" id="lumen-wrap">
           <div class="drop-placeholder" id="lumen-placeholder">
-            <div class="drop-icon">◈</div>
             <div class="drop-text">クリックまたはドラッグ&ドロップ<em>JPG · PNG · WEBP</em></div>
           </div>
           <canvas class="main-canvas" id="lumen-orig-canvas"></canvas>
@@ -581,8 +593,6 @@ document.addEventListener('gesturestart',function(e){e.preventDefault();},{passi
         </div>
         <div class="sidebar-footer">
           <button class="btn-primary" id="lumen-to-aura">✦ Auraへ確定して渡す</button>
-          <button class="btn-secondary" id="lumen-reset">全リセット</button>
-          <button class="btn-secondary" id="lumen-export">Export PNG</button>
         </div>
       </div>
     </div>
@@ -590,16 +600,21 @@ document.addEventListener('gesturestart',function(e){e.preventDefault();},{passi
 
   <!-- ══ AURA ══ -->
   <div class="tab-panel" id="panel-aura">
+    <div class="cutout-toolbar">
+      <span class="ct-title">Aura — 光の追加</span>
+      <div class="head-actions">
+        <button class="btn" id="aura-undo" title="元に戻す" disabled>↶</button>
+        <button class="btn" id="aura-redo" title="やり直す" disabled>↷</button>
+        <button class="btn" id="aura-reset-all">やり直す</button>
+        <button class="btn primary" id="aura-export">保存</button>
+      </div>
+    </div>
     <div class="tool-layout">
       <div class="canvas-area">
-        <div class="compare-bar">
-          <button class="cmp-btn" id="aura-undo" disabled>↶</button>
-          <button class="cmp-btn" id="aura-redo" disabled>↷</button>
-        </div>
+        <div class="compare-bar" aria-hidden="true"></div>
         <div class="canvas-wrap" id="aura-wrap">
           <div class="drop-placeholder" id="aura-placeholder">
-            <div class="drop-icon">◉</div>
-            <div class="drop-text">Lumenで画像を読み込んでください<em>またはここをクリックして直接開く</em></div>
+            <div class="drop-text">クリックまたはドラッグ&ドロップ<em>JPG · PNG · WEBP</em></div>
           </div>
           <canvas class="main-canvas" id="aura-base-canvas"></canvas>
           <canvas class="main-canvas" id="aura-light-canvas" style="mix-blend-mode:screen;"></canvas>
@@ -653,12 +668,12 @@ document.addEventListener('gesturestart',function(e){e.preventDefault();},{passi
             <input type="range" id="sl-acore" min="2" max="80" value="18">
           </div>
           <div class="ctrl">
-            <div class="ctrl-head"><span class="ctrl-name">🌐 広がり</span><input class="num-input" id="ni-aradius" type="number" min="50" max="700" value="350"></div>
-            <input type="range" id="sl-aradius" min="50" max="700" value="350">
+            <div class="ctrl-head"><span class="ctrl-name">🌐 広がり</span><input class="num-input" id="ni-aradius" type="number" min="8" max="700" value="350"></div>
+            <input type="range" id="sl-aradius" min="8" max="700" value="350">
           </div>
           <div class="ctrl">
-            <div class="ctrl-head"><span class="ctrl-name">✦ 光線</span><input class="num-input" id="ni-arays" type="number" min="0" max="80" value="32"></div>
-            <input type="range" id="sl-arays" min="0" max="80" value="32">
+            <div class="ctrl-head"><span class="ctrl-name">✦ ぼかし</span><input class="num-input" id="ni-arays" type="number" min="0" max="100" value="50"></div>
+            <input type="range" id="sl-arays" min="0" max="100" value="50">
           </div>
           <div class="ctrl">
             <div class="ctrl-head"><span class="ctrl-name">🌫 拡散</span><input class="num-input" id="ni-adiffuse" type="number" min="0" max="100" value="30"></div>
@@ -677,11 +692,8 @@ document.addEventListener('gesturestart',function(e){e.preventDefault();},{passi
           <div id="aura-layers"></div>
         </div>
         <div class="sidebar-footer">
-          <button class="btn-primary" id="aura-confirm">✦ 光を確定して追加</button>
           <button class="btn-primary" id="aura-to-board">✓ 仕上げてBoardへ</button>
           <button class="btn-secondary" id="aura-to-lumen">← Lumenへ戻る</button>
-          <button class="btn-secondary btn-danger" id="aura-reset-all">全光源リセット</button>
-          <button class="btn-secondary" id="aura-export">Export PNG</button>
         </div>
       </div>
     </div>
@@ -701,10 +713,10 @@ document.addEventListener('gesturestart',function(e){e.preventDefault();},{passi
     <div class="cutout-main">
       <div class="warn" id="warn"></div>
 
+      <div class="compare-bar" aria-hidden="true" style="width:100%;max-width:760px;margin-bottom:0;height:28px;"></div>
       <div class="drop" id="drop">
-        <div class="drop-ico">⛰</div>
-        <div class="drop-t">写真をえらぶ</div>
-        <div class="drop-s" id="drop-s">CGパース向け：読み込み後、背景をタップして切り抜きます<br>通信・AIモデル不要、オフラインでも動きます</div>
+        <div class="drop-t">クリックまたはドラッグ&ドロップ</div>
+        <div class="drop-s" id="drop-s">JPG · PNG · WEBP</div>
       </div>
 
       <div class="progress" id="progress">
@@ -954,6 +966,7 @@ document.addEventListener('gesturestart',function(e){e.preventDefault();},{passi
 <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/heic,image/heif">
 <input type="file" id="board-file-input" accept="image/*">
 <input type="file" id="cutout-file-input" accept="image/*">
+<input type="file" id="aura-file-input" accept="image/*">
 <div class="toast" id="toast"></div>
 
 <div class="preview-modal" id="preview-modal">
@@ -1084,10 +1097,111 @@ document.getElementById('lumen-placeholder').addEventListener('click',()=>{
   document.getElementById('file-input').value='';
   document.getElementById('file-input').click();
 });
-document.getElementById('aura-placeholder').addEventListener('click',()=>{
-  document.getElementById('file-input').value='';
-  document.getElementById('file-input').click();
+// Cutoutのdropと同じ最小構成（iOS Safariはユーザー操作の直下でしかダイアログを開けない）
+document.getElementById('aura-placeholder').addEventListener('click',e=>{
+  e.stopPropagation();
+  document.getElementById('aura-file-input').click();
 });
+// Auraから直接読み込む（Cutout/Lumenを通さずに光だけ足したいとき）
+let auraOwnImage=false; // Aura単体で読み込んだ画像を使用中か
+function loadImageIntoAura(file){
+  if(!file) return;
+  // HEIC等はtypeが空になることがあるため拡張子でも判定する
+  const okType = (file.type && file.type.startsWith('image/')) ||
+                 /\.(jpe?g|png|webp|heic|heif|gif|bmp|avif)$/i.test(file.name||'');
+  if(!okType){ showToast('画像ファイルを選んでください'); return; }
+
+  showToast('読み込み中…');
+  const url=URL.createObjectURL(file);
+  const img=new Image();
+  img.decoding='async';
+  img.onload=()=>{
+    try{
+      let w=img.naturalWidth||img.width, h=img.naturalHeight||img.height;
+      if(!w||!h){ URL.revokeObjectURL(url); showToast('画像を読み取れませんでした'); return; }
+      // スマホのメモリ対策：大きすぎる写真は表示用に縮小（Lumen側と同じ基準）
+      if(w>PREVIEW_MAX || h>PREVIEW_MAX){
+        const r=Math.min(PREVIEW_MAX/w, PREVIEW_MAX/h);
+        w=Math.max(1,Math.round(w*r)); h=Math.max(1,Math.round(h*r));
+      }
+      auraImageCanvas=document.createElement('canvas');
+      auraImageCanvas.width=w; auraImageCanvas.height=h;
+      auraImageCanvas.getContext('2d').drawImage(img,0,0,w,h);
+
+      const bc=document.getElementById('aura-base-canvas');
+      bc.width=w;bc.height=h;bc.style.display='block';
+      const lc=document.getElementById('aura-light-canvas');
+      lc.width=w;lc.height=h;lc.style.display='none';lc.style.mixBlendMode='normal';
+      ensureAuraLayerBuffers(w,h);
+
+      document.getElementById('aura-placeholder').style.display='none';
+      document.getElementById('aura-meta').textContent=`${w} × ${h}`;
+      state.imageLoaded=true;
+      state.auraLights=[]; state.auraPreview=null;
+      if(typeof updateLightList==='function') updateLightList();
+      redrawAura();
+      if(typeof pushAuraHist==='function') pushAuraHist();
+      auraOwnImage=true;
+      showToast('画像を読み込みました。画面をタップして光を置けます');
+    }catch(err){
+      console.error(err);
+      showToast('読み込みに失敗しました: '+(err&&err.message?err.message:err));
+    }finally{
+      URL.revokeObjectURL(url);
+    }
+  };
+  img.onerror=()=>{
+    URL.revokeObjectURL(url);
+    // objectURLで開けない形式（iOSのHEIC等）はFileReaderで再挑戦
+    const fr=new FileReader();
+    fr.onload=ev=>{
+      const im2=new Image();
+      im2.onload=()=>{ loadImageIntoAura._fromImg(im2); };
+      im2.onerror=()=>showToast('この画像形式は読み込めませんでした');
+      im2.src=ev.target.result;
+    };
+    fr.onerror=()=>showToast('ファイルを読み取れませんでした');
+    fr.readAsDataURL(file);
+  };
+  img.src=url;
+}
+// 読み込み済みImageから反映（フォールバック用）
+loadImageIntoAura._fromImg=function(img){
+  let w=img.naturalWidth||img.width, h=img.naturalHeight||img.height;
+  if(w>PREVIEW_MAX || h>PREVIEW_MAX){
+    const r=Math.min(PREVIEW_MAX/w, PREVIEW_MAX/h);
+    w=Math.max(1,Math.round(w*r)); h=Math.max(1,Math.round(h*r));
+  }
+  auraImageCanvas=document.createElement('canvas');
+  auraImageCanvas.width=w; auraImageCanvas.height=h;
+  auraImageCanvas.getContext('2d').drawImage(img,0,0,w,h);
+  const bc=document.getElementById('aura-base-canvas');
+  bc.width=w;bc.height=h;bc.style.display='block';
+  const lc=document.getElementById('aura-light-canvas');
+  lc.width=w;lc.height=h;lc.style.display='none';lc.style.mixBlendMode='normal';
+  ensureAuraLayerBuffers(w,h);
+  document.getElementById('aura-placeholder').style.display='none';
+  document.getElementById('aura-meta').textContent=`${w} × ${h}`;
+  state.imageLoaded=true;
+  state.auraLights=[]; state.auraPreview=null;
+  if(typeof updateLightList==='function') updateLightList();
+  redrawAura();
+  if(typeof pushAuraHist==='function') pushAuraHist();
+  auraOwnImage=true;
+  showToast('画像を読み込みました。画面をタップして光を置けます');
+};
+document.getElementById('aura-file-input').addEventListener('change',e=>{
+  const f=e.target.files[0];
+  e.target.value='';   // 同じ写真を選び直しても発火するように
+  loadImageIntoAura(f);
+});
+// Auraへのドラッグ&ドロップ
+(()=>{
+  const aw=document.getElementById('aura-wrap');
+  aw.addEventListener('dragover',e=>{e.preventDefault();aw.style.borderColor='var(--amber)';});
+  aw.addEventListener('dragleave',()=>aw.style.borderColor='');
+  aw.addEventListener('drop',e=>{e.preventDefault();aw.style.borderColor='';loadImageIntoAura(e.dataTransfer.files[0]);});
+})();
 
 // 表示用の最大解像度（スマホ対策）
 const PREVIEW_MAX = 1500;
@@ -1478,6 +1592,7 @@ document.getElementById('lumen-export').addEventListener('click',()=>{
 
 document.getElementById('lumen-to-aura').addEventListener('click',()=>{
   if(!state.imageLoaded){showToast('画像がありません');return;}
+  auraOwnImage=false; // 明示的に渡されたときはLumen結果で置き換える
   switchTab('aura');showToast('Auraへ渡しました');
 });
 
@@ -1556,6 +1671,7 @@ function drawAuraLayer(ctx,key){
 
 function transferLumenToAura(){
   if(!state.lumenImageData)return;
+  auraOwnImage=false;
   const {width:w,height:h}=state.lumenImageData;
   // Lumen結果をオフスクリーンに保持
   auraImageCanvas=document.createElement('canvas');
@@ -1596,7 +1712,7 @@ function redrawAura(){
   });
   if (state.auraPreview) {
     const p = state.auraPreview;
-    drawOneLight(lctx, lc, p.x, p.y, p.color, p.bright, p.core || 18, p.radius, p.rays, p.diffuse);
+    drawOneLight(lctx, lc, p.x, p.y, p.color, p.bright, p.core || 18, p.radius, p.softness, p.diffuse);
   }
 
   // 2) 全レイヤー合成：背面2→背面1→画像→前面1→前面2→光源
@@ -1613,65 +1729,55 @@ function redrawAura(){
   ctx.globalCompositeOperation = 'source-over';
 }
 
-function drawOneLight(ctx, canvas, lx, ly, color, intensity, core, radius, rayCount, diffuse) {
+function drawOneLight(ctx, canvas, lx, ly, color, intensity, core, radius, softness, diffuse) {
   if (intensity === 0) return;
   const w = canvas.width, h = canvas.height;
   const coreR = (core / 80) * radius * 0.3;
+  // softness: 0=ソリッドな光球 / 100=ぼんやり。グラデの立ち上がり位置をずらして輪郭の硬さを作る
+  const s = Math.max(0, Math.min(100, softness == null ? 50 : softness)) / 100;
 
-  const hg = ctx.createRadialGradient(lx, ly, radius * 0.05, lx, ly, radius * 2.5);
-  hg.addColorStop(0,   hexToRgba(color, intensity * 0.20));
-  hg.addColorStop(0.3, hexToRgba(color, intensity * 0.10));
-  hg.addColorStop(0.7, hexToRgba(color, intensity * 0.03));
+  const haloR = radius * (1.3 + s * 1.9);
+  const hg = ctx.createRadialGradient(lx, ly, radius * 0.05, lx, ly, haloR);
+  hg.addColorStop(0,   hexToRgba(color, intensity * (0.06 + s * 0.24)));
+  hg.addColorStop(0.3, hexToRgba(color, intensity * (0.03 + s * 0.14)));
+  hg.addColorStop(0.7, hexToRgba(color, intensity * (0.01 + s * 0.06)));
   hg.addColorStop(1,   'rgba(0,0,0,0)');
-  ctx.fillStyle = hg; ctx.fillRect(0, 0, w, h);
+  // 到達円の中だけ塗る（画面全体を薄く覆わない＝小さい光がちゃんと小さくなる）
+  ctx.fillStyle = hg;
+  ctx.beginPath(); ctx.arc(lx, ly, haloR, 0, Math.PI*2); ctx.fill();
 
   if (coreR > 0) {
-    const cg = ctx.createRadialGradient(lx, ly, 0, lx, ly, coreR);
+    // 硬いほど芯がはっきり残り、柔らかいほど芯が溶ける
+    const cg = ctx.createRadialGradient(lx, ly, 0, lx, ly, coreR * (1 + s * 1.6));
     cg.addColorStop(0,    hexToRgba(color, Math.min(intensity * 1.2, 1.0)));
-    cg.addColorStop(0.4,  hexToRgba(color, intensity * 0.95));
-    cg.addColorStop(0.75, hexToRgba(color, intensity * 0.6));
-    cg.addColorStop(1,    hexToRgba(color, intensity * 0.1));
-    ctx.fillStyle = cg; ctx.fillRect(0, 0, w, h);
+    cg.addColorStop(0.4,  hexToRgba(color, intensity * (0.95 - s * 0.35)));
+    cg.addColorStop(0.75, hexToRgba(color, intensity * (0.60 - s * 0.30)));
+    cg.addColorStop(1,    hexToRgba(color, intensity * (0.10 + s * 0.10)));
+    ctx.fillStyle = cg;
+    ctx.beginPath(); ctx.arc(lx, ly, coreR * (1 + s * 1.6), 0, Math.PI*2); ctx.fill();
   }
 
+  // 本体: softness=0 は縁までほぼ均一に光る球、softness=100 は中心から一気に減衰するにじみ。
+  // 立ち上がり位置(edge)を動かして「輪郭の締まり」を作る
+  const edge = 0.82 - s * 0.78;   // 0 → 0.82(縁で急落) / 1 → 0.04(すぐ落ち始める)
   const rg = ctx.createRadialGradient(lx, ly, coreR * 0.5, lx, ly, radius);
-  rg.addColorStop(0,    hexToRgba(color, intensity * 0.75));
-  rg.addColorStop(0.08, hexToRgba(color, intensity * 0.55));
-  rg.addColorStop(0.2,  hexToRgba(color, intensity * 0.30));
-  rg.addColorStop(0.45, hexToRgba(color, intensity * 0.10));
-  rg.addColorStop(0.75, hexToRgba(color, intensity * 0.025));
-  rg.addColorStop(1,    'rgba(0,0,0,0)');
-  ctx.fillStyle = rg; ctx.fillRect(0, 0, w, h);
+  rg.addColorStop(0, hexToRgba(color, intensity * (0.95 - s * 0.30)));
+  rg.addColorStop(Math.max(0.02, edge * 0.55), hexToRgba(color, intensity * (0.90 - s * 0.62)));
+  rg.addColorStop(Math.max(0.05, edge),        hexToRgba(color, intensity * (0.80 - s * 0.72)));
+  rg.addColorStop(Math.min(0.98, edge + (1 - edge) * 0.55), hexToRgba(color, intensity * (0.25 - s * 0.18)));
+  rg.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = rg;
+  ctx.beginPath(); ctx.arc(lx, ly, radius, 0, Math.PI*2); ctx.fill();
 
   if (diffuse > 0) {
     const dg = ctx.createRadialGradient(lx, ly, radius * 0.3, lx, ly, radius * 2.0);
     dg.addColorStop(0,   hexToRgba(color, diffuse * 0.18));
     dg.addColorStop(0.4, hexToRgba(color, diffuse * 0.08));
     dg.addColorStop(1,   'rgba(0,0,0,0)');
-    ctx.fillStyle = dg; ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = dg;
+    ctx.beginPath(); ctx.arc(lx, ly, radius * 2.0, 0, Math.PI*2); ctx.fill();
   }
 
-  if (rayCount > 0) {
-    ctx.save(); ctx.translate(lx, ly);
-    for (let i = 0; i < rayCount; i++) {
-      const angle = (i * 2 * Math.PI) / rayCount;
-      const rl = radius * 1.6;
-      ctx.save(); ctx.rotate(angle);
-      const rray = ctx.createLinearGradient(0, 0, 0, rl);
-      rray.addColorStop(0,    hexToRgba(color, intensity * 0.35));
-      rray.addColorStop(0.04, hexToRgba(color, intensity * 0.25));
-      rray.addColorStop(0.15, hexToRgba(color, intensity * 0.10));
-      rray.addColorStop(0.4,  hexToRgba(color, intensity * 0.03));
-      rray.addColorStop(1,    'rgba(0,0,0,0)');
-      const bw = Math.max(1.0, radius * 0.009);
-      ctx.fillStyle = rray;
-      ctx.beginPath(); ctx.moveTo(0, 0);
-      ctx.lineTo(-bw, rl); ctx.lineTo(bw, rl);
-      ctx.closePath(); ctx.fill();
-      ctx.restore();
-    }
-    ctx.restore();
-  }
 }
 
 // Auraインタラクション
@@ -1699,7 +1805,7 @@ function updateAuraPreview(clientX, clientY) {
     bright:  p.bright,
     core:    p.core,
     radius:  p.radius,
-    rays:    p.rays,
+    softness: p.softness,
     diffuse: p.diffuse,
   };
   document.getElementById('aura-pos').textContent = `光源 ${pos.dispX}, ${pos.dispY}`;
@@ -1707,9 +1813,12 @@ function updateAuraPreview(clientX, clientY) {
 }
 
 auraWrap.addEventListener('pointerdown', e => {
-  if (!state.imageLoaded) {
-    document.getElementById('file-input').value='';
-    document.getElementById('file-input').click();
+  if (!auraImageCanvas) {
+    // プレースホルダ表示中は、そちらのclickハンドラが担当する（二重呼び出し防止）
+    const ph=document.getElementById('aura-placeholder');
+    if(!ph || getComputedStyle(ph).display==='none'){
+      document.getElementById('aura-file-input').click();
+    }
     return;
   }
   auraWrap.setPointerCapture(e.pointerId);
@@ -1724,11 +1833,8 @@ auraWrap.addEventListener('pointermove', e => {
 auraWrap.addEventListener('pointerup', e => {
   auraWrap.releasePointerCapture(e.pointerId);
   if (maskEditKey){ maskPointer(e,'up'); return; }
-});
-auraWrap.addEventListener('click', e => {
   if (!state.imageLoaded) return;
-  if (maskEditKey) return; // マスク編集中は光源を置かない
-  updateAuraPreview(e.clientX, e.clientY);
+  commitAuraLight(); // 置いた場所で即確定
 });
 
 function syncAuraSlider(slId, niId, onUpdate) {
@@ -1751,7 +1857,7 @@ function getAuraParams() {
     bright:  parseInt(document.getElementById('sl-abright').value) / 100,
     core:    parseInt(document.getElementById('sl-acore').value),
     radius:  parseInt(document.getElementById('sl-aradius').value),
-    rays:    parseInt(document.getElementById('sl-arays').value),
+    softness: parseInt(document.getElementById('sl-arays').value),
     diffuse: parseInt(document.getElementById('sl-adiffuse').value) / 100,
   };
 }
@@ -1762,7 +1868,7 @@ function updatePreviewFromSliders() {
     state.auraPreview.bright  = p.bright;
     state.auraPreview.core    = p.core;
     state.auraPreview.radius  = p.radius;
-    state.auraPreview.rays    = p.rays;
+    state.auraPreview.softness = p.softness;
     state.auraPreview.diffuse = p.diffuse;
   }
   scheduleAura();
@@ -1801,21 +1907,21 @@ document.querySelectorAll('.blend-btn').forEach(btn=>{
   });
 });
 
-document.getElementById('aura-confirm').addEventListener('click',()=>{
-  if(!state.auraPreview){showToast('光源を配置してください');return;}
-
+// 置いた光をその場で確定する（確定ボタンは廃止／やり直しは↶で）
+function commitAuraLight(){
+  if(!state.auraPreview) return;
   const lc = document.getElementById('aura-light-canvas');
   const off = document.createElement('canvas');
   off.width = lc.width; off.height = lc.height;
   const offCtx = off.getContext('2d');
   const p = state.auraPreview;
-  drawOneLight(offCtx, off, p.x, p.y, p.color, p.bright, p.core||18, p.radius, p.rays, p.diffuse);
+  drawOneLight(offCtx, off, p.x, p.y, p.color, p.bright, p.core||18, p.radius, p.softness, p.diffuse);
 
   state.auraLights.push({...state.auraPreview, _cache: off});
   state.auraPreview = null;
   updateLightList(); scheduleAura(); pushAuraHist();
-  showToast(`光源を確定！計 ${state.auraLights.length} 個`);
-});
+  showToast(`光を置きました（計 ${state.auraLights.length} 個・↶で取り消し）`);
+}
 
 function updateLightList(){
   const list=document.getElementById('light-list');
@@ -2093,8 +2199,13 @@ function switchTab(tab){
   state.currentTab=tab;
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===`panel-${tab}`));
+  if(tab==='lumen'){
+    // Cutoutの最新結果をそのまま引き継ぐ（未反映のものがあるときだけ）
+    setTimeout(()=>autoHandoffToLumen(),50);
+  }
   if(tab==='aura'){
-    setTimeout(()=>transferLumenToAura(),50);
+    // Aura内で直接読み込んだ画像がある場合はそれを維持し、Lumen結果で上書きしない
+    if(!auraOwnImage) setTimeout(()=>transferLumenToAura(),50);
   }
   if(tab==='board'){
     setTimeout(()=>{ if(window.ParsBoard) window.ParsBoard.show(); },60);
@@ -2130,6 +2241,25 @@ window.ParsBridge = {
     img.src = dataURL;
   },
 };
+
+// Cutout → Lumen の自動引き継ぎ。同じ結果を二重に読み込まないよう署名で判定する
+let lastHandoffSig = null;
+function autoHandoffToLumen(){
+  const get = window.__parsCutoutGetDataURL;
+  if(!get) return;
+  let url=null;
+  try{ url = get(); }catch(e){ return; }
+  if(!url) return;                       // Cutoutにまだ結果がない
+  const sig = url.length + ':' + url.slice(-64);   // 内容が変わったかの簡易署名
+  if(sig === lastHandoffSig) return;     // すでに引き継ぎ済み
+  lastHandoffSig = sig;
+  const img = new Image();
+  img.onload = ()=>{
+    applyLoadedImage(img, 'cutout', 'PNG', true);
+    auraOwnImage = false;                // Auraにも新しい結果が流れるようにする
+  };
+  img.src = url;
+}
 
 document.getElementById('snap-save').addEventListener('click', () => {
   const tab = state.currentTab;
@@ -4034,6 +4164,8 @@ $('btn-tolumen').addEventListener('click',()=>{
     window.ParsBridge.goTab('lumen');
   }
 });
+// Cutoutで編集し直したら、次にLumenを開いたとき最新が反映されるようにする
+window.__parsCutoutTouched = ()=>{ if(typeof lastHandoffSig!=='undefined') lastHandoffSig=null; };
 
 // ── スナップへ送る（透過PNGを共通トレイへ → Boardで使える） ──
 $('btn-tosnap').addEventListener('click',()=>{
