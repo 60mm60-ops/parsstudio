@@ -17,16 +17,14 @@
 body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 
 /* ── Header ── */
-header{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;border-bottom:1px solid var(--border);background:var(--panel);flex-shrink:0;gap:12px;}
-.logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;letter-spacing:0.3em;color:var(--amber);text-transform:uppercase;white-space:nowrap;}
-.logo small{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-dim);letter-spacing:0.2em;display:block;margin-top:-2px;}
-.tabs{display:flex;gap:4px;background:var(--panel2);padding:4px;border:1px solid var(--border);}
-.tab{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;padding:7px 18px;border:1px solid transparent;background:transparent;color:var(--text-dim);cursor:pointer;transition:all 0.18s;white-space:nowrap;}
+header{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-bottom:1px solid var(--border);background:var(--panel);flex-shrink:0;gap:10px;}
+.logo{font-family:'Cormorant Garamond',serif;font-size:11px;font-weight:300;letter-spacing:0.18em;line-height:1.2;color:var(--amber);text-transform:uppercase;white-space:nowrap;flex-shrink:0;}
+.logo small{font-family:'DM Mono',monospace;font-size:6.5px;color:var(--text-dim);letter-spacing:0.12em;display:block;margin-top:1px;}
+.tabs{display:flex;gap:3px;background:var(--panel2);padding:3px;border:1px solid var(--border);flex:0 1 auto;min-width:0;}
+.tab{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:6px 12px;border:1px solid transparent;background:transparent;color:var(--text-dim);cursor:pointer;transition:all 0.18s;white-space:nowrap;}
 .tab:hover{color:var(--amber);}
 .tab.active{border-color:var(--amber);background:var(--bg);color:var(--amber);}
 .tab.disabled{opacity:0.35;cursor:not-allowed;pointer-events:none;}
-.btn-open{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.12em;padding:8px 16px;border:1px solid var(--amber);background:var(--amber-glow);color:var(--amber);cursor:pointer;transition:all 0.2s;text-transform:uppercase;}
-.btn-open:hover{background:rgba(138,94,40,0.18);}
 
 /* ── Workspace ── */
 .workspace{flex:1;display:flex;flex-direction:column;min-height:0;}
@@ -45,6 +43,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 canvas.main-canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:none;}
 .canvas-meta{margin-top:8px;font-size:10px;color:var(--text-dim);letter-spacing:0.12em;display:flex;gap:16px;align-self:flex-start;}
 .canvas-meta span{display:flex;align-items:center;gap:5px;}
+.reselect-row{display:none;align-self:flex-start;margin-top:8px;}
+.btn-reselect{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:7px 14px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all 0.18s;}
+.btn-reselect:hover{border-color:var(--amber);color:var(--amber);background:var(--amber-glow);}
 .dot{width:4px;height:4px;border-radius:50%;background:var(--amber-dim);flex-shrink:0;}
 
 /* ── Sidebar (Lumen/Aura) ── */
@@ -87,7 +88,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border:none;border-ra
 .sidebar-footer{padding:16px 20px;margin-top:auto;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;flex-shrink:0;}
 
 /* compare bar */
-.compare-bar{display:flex;gap:6px;margin-bottom:10px;align-items:center;min-height:28px;}
+.compare-bar{display:flex;gap:6px;margin-bottom:8px;align-items:center;min-height:28px;}
 .compare-bar .ct-title{margin-right:auto;}
 .cmp-btn{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:6px 12px;border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer;transition:all 0.18s;}
 .cmp-btn.active{border-color:var(--amber);color:var(--amber);background:var(--amber-glow);}
@@ -243,15 +244,22 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
 .src-cancel{padding:10px;border:1px solid var(--border);background:transparent;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;}
 
 @media(max-width:768px){
-  .tool-layout{grid-template-columns:1fr;overflow:auto;}
-  .canvas-area{border-right:none;border-bottom:1px solid var(--border);padding:8px;}
+  .tool-layout{grid-template-columns:1fr;grid-template-rows:min-content min-content;overflow:auto;}
+  .canvas-area{border-right:none;border-bottom:1px solid var(--border);padding:8px;justify-content:flex-start;overflow:visible;min-height:0;}
 
   .sidebar{overflow-y:visible;}
-  header{padding:10px 14px;gap:8px;}
-  .logo{font-size:16px;}
-  .logo small{display:none;}
-  .tab{padding:6px 10px;font-size:10px;}
-  .btn-open{padding:8px 10px;font-size:10px;}
+  header{padding:7px 8px;gap:6px;}
+  .logo{font-size:9.5px;letter-spacing:0.1em;}
+  .logo small{font-size:6px;letter-spacing:0.08em;}
+  .tabs{gap:2px;padding:2px;}
+  .tab{padding:6px 6px;font-size:9px;letter-spacing:0.03em;}
+}
+
+/* 幅の狭い端末でも4タブを1行に収める */
+@media(max-width:390px){
+  header{padding:6px 6px;gap:4px;}
+  .logo{font-size:9px;letter-spacing:0.06em;}
+  .tab{padding:6px 4px;font-size:8.5px;letter-spacing:0;}
 }
 
 /* ══════════════════════════════════════════
@@ -435,9 +443,6 @@ input[type=color]::-webkit-color-swatch{border:2px solid var(--border);border-ra
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
   text-align:center;cursor:pointer;transition:all 0.2s;flex-shrink:0;}
 #panel-cutout .drop:hover,#panel-cutout .drop.over{border-color:var(--amber);background:var(--amber-glow);}
-#panel-cutout .drop-ico{font-size:34px;color:var(--amber-dim);margin-bottom:14px;}
-#panel-cutout .drop-t{font-size:11px;color:#8a6840;letter-spacing:0.16em;text-transform:uppercase;margin-bottom:4px;}
-#panel-cutout .drop-s{font-size:9px;color:#6a5030;line-height:1.7;letter-spacing:0.16em;}
 
 /* stage */
 #panel-cutout .stage{width:100%;max-width:760px;display:none;flex-direction:column;gap:16px;}
@@ -522,7 +527,6 @@ document.addEventListener('gesturestart',function(e){e.preventDefault();},{passi
     <button class="tab" data-tab="aura">Aura</button>
     <button class="tab" data-tab="board">Board</button>
   </div>
-  <button class="btn-open" id="open-btn">画像を開く</button>
 </header>
 
 <div class="workspace">
@@ -554,6 +558,9 @@ document.addEventListener('gesturestart',function(e){e.preventDefault();},{passi
         <div class="canvas-meta">
           <span><div class="dot"></div><span id="lumen-meta-size">—</span></span>
           <span><div class="dot"></div><span id="lumen-meta-fmt">LUMEN READY</span></span>
+        </div>
+        <div class="reselect-row" id="lumen-reselect-row">
+          <button class="btn-reselect" id="lumen-reselect">↻ 画像を選び直す</button>
         </div>
       </div>
       <div class="sidebar">
@@ -590,6 +597,10 @@ document.addEventListener('gesturestart',function(e){e.preventDefault();},{passi
             <button class="preset-btn" data-preset="fade">Fade</button>
             <button class="preset-btn" data-preset="mono">Mono</button>
           </div>
+          <div class="ctrl" style="margin-top:14px;">
+            <div class="ctrl-head"><span class="ctrl-name">効きの強さ</span><input class="num-input" id="ni-preset-amt" type="number" min="0" max="150" value="100"></div>
+            <input type="range" id="sl-preset-amt" min="0" max="150" step="5" value="100">
+          </div>
         </div>
         <div class="sidebar-footer">
           <button class="btn-primary" id="lumen-to-aura">✦ Auraへ確定して渡す</button>
@@ -622,6 +633,9 @@ document.addEventListener('gesturestart',function(e){e.preventDefault();},{passi
         <div class="canvas-meta">
           <span><div class="dot"></div><span id="aura-meta">画像未読込</span></span>
           <span><div class="dot"></div><span id="aura-pos">光源 — —</span></span>
+        </div>
+        <div class="reselect-row" id="aura-reselect-row">
+          <button class="btn-reselect" id="aura-reselect">↻ 画像を選び直す</button>
         </div>
         <div class="aura-maskbar" id="aura-maskbar">
           <span class="mb-label" id="aura-maskbar-name">レイヤー編集中</span>
@@ -713,17 +727,16 @@ document.addEventListener('gesturestart',function(e){e.preventDefault();},{passi
     <div class="cutout-main">
       <div class="warn" id="warn"></div>
 
-      <div class="compare-bar" aria-hidden="true" style="width:100%;max-width:760px;margin-bottom:0;height:28px;"></div>
+      <div class="compare-bar" aria-hidden="true" style="width:100%;max-width:760px;height:28px;"></div>
       <div class="drop" id="drop">
-        <div class="drop-t">クリックまたはドラッグ&ドロップ</div>
-        <div class="drop-s" id="drop-s">JPG · PNG · WEBP</div>
+        <div class="drop-text">クリックまたはドラッグ&ドロップ<em id="drop-s">JPG · PNG · WEBP</em></div>
       </div>
 
       <div class="progress" id="progress">
         <div class="spinner" id="spinner"></div>
         <div class="prog-label" id="prog-label">じゅんび中…</div>
         <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
-        <div class="prog-sub" id="prog-sub">はじめてのときは、AIモデル（数十MB）を読み込むため少し時間がかかります。<br>2回目からは速くなります。</div>
+        <div class="prog-sub" id="prog-sub">大きな写真ほど読み込みに少し時間がかかります。</div>
       </div>
 
       <div class="stage" id="stage">
@@ -778,6 +791,7 @@ document.addEventListener('gesturestart',function(e){e.preventDefault();},{passi
             <input type="range" id="wand-edge" min="1" max="320" step="1" value="60">
           </div>
         </div>
+        <div class="brush-bar">
           <div class="brush-size" id="wand-island-row" style="display:none;">
             <span class="bg-label">ゴミ取り</span>
             <input type="range" id="wand-island" min="0" max="400" step="10" value="60">
@@ -791,6 +805,7 @@ document.addEventListener('gesturestart',function(e){e.preventDefault();},{passi
             <button class="brush-btn" id="wand-keep">＋ 戻すタップ</button>
             <button class="brush-btn" id="wand-undo">↶ 取り消し</button>
           </div>
+        </div>
 
         <div class="brush-bar" id="curve-controls" style="display:none;">
           <div class="brush-modes">
@@ -990,15 +1005,27 @@ window.addEventListener('error', (e)=>{
 }, true);
 
 // ═══════════════════════════════
+// 共通UIユーティリティ（全スコープ共有）
+// トースト表示と保存処理はここ1か所に集約する
+// ═══════════════════════════════
+window.ParsUI = {
+  toast(msg){
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.classList.add('show');
+    clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('show'),2400);
+  },
+  shareBlob(blob, filename){ return shareOrDownloadBlob(blob, filename); },
+};
+
+// ═══════════════════════════════
 // GLOBAL STATE (Lumen / Aura / 共通)
 // ═══════════════════════════════
-const state = {
+const studioState = {
   imageLoaded: false,
   fileName: 'image',
   originalImageData: null,
   originalImageDataFull: null,
   originalImage: null,
-  previewScale: null,
   lumenImageData: null,
   lumenParams: { brightness:0,contrast:0,highlights:0,shadows:0,temp:0,tint:0,saturation:0,hue:0,sharpen:0,vignette:0 },
   auraLights: [],
@@ -1048,50 +1075,53 @@ function hslToRgb(h,s,l){
   return[Math.round(f(h+1/3)*255),Math.round(f(h)*255),Math.round(f(h-1/3)*255)];
 }
 
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),2400);
-}
+function showToast(msg){ window.ParsUI.toast(msg); }
 
 // Auraの表示キャンバスは常に完成形（レイヤー＋光源合成済み）なのでそのまま書き出す
 function getAuraCompositeDataURL() {
   const bc = document.getElementById('aura-base-canvas');
   if (!bc.width) return null;
-  return state.hasAlpha ? bc.toDataURL('image/png') : bc.toDataURL('image/jpeg', 0.9);
+  return studioState.hasAlpha ? bc.toDataURL('image/png') : bc.toDataURL('image/jpeg', 0.9);
 }
 
 function getLumenDataURL(full=false) {
-  if (full && state.originalImageDataFull) {
+  if (full && studioState.originalImageDataFull) {
     // 原寸で再処理して書き出し
-    const src = state.originalImageDataFull.data;
-    const w = state.originalImageDataFull.width;
-    const h = state.originalImageDataFull.height;
+    const src = studioState.originalImageDataFull.data;
+    const w = studioState.originalImageDataFull.width;
+    const h = studioState.originalImageDataFull.height;
     const out = applyLumenToData(src, w, h);
     const off = document.createElement('canvas');
     off.width = w; off.height = h;
     const ctx = off.getContext('2d');
     ctx.putImageData(new ImageData(out, w, h), 0, 0);
-    const p = state.lumenParams;
+    const p = studioState.lumenParams;
     if (p.vignette > 0) {
       const vs = p.vignette / 100;
       const gr = ctx.createRadialGradient(w/2,h/2,Math.min(w,h)*0.3,w/2,h/2,Math.max(w,h)*0.72);
       gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,`rgba(0,0,0,${vs*0.85})`);
       ctx.fillStyle=gr;ctx.fillRect(0,0,w,h);
     }
-    return state.hasAlpha ? off.toDataURL('image/png') : off.toDataURL('image/jpeg', 0.95);
+    return studioState.hasAlpha ? off.toDataURL('image/png') : off.toDataURL('image/jpeg', 0.95);
   }
   const pc = document.getElementById('lumen-preview-canvas');
   if (!pc.width) return null;
-  return state.hasAlpha ? pc.toDataURL('image/png') : pc.toDataURL('image/jpeg', 0.9);
+  return studioState.hasAlpha ? pc.toDataURL('image/png') : pc.toDataURL('image/jpeg', 0.9);
 }
 
 // ═══════════════════════════════
 // FILE LOAD
 // ═══════════════════════════════
-document.getElementById('open-btn').addEventListener('click',()=>{
-  document.getElementById('file-input').value='';
-  document.getElementById('file-input').click();
+// 画像が入っている作業領域の下に「選び直す」を出す
+function setReselectVisible(which, on){
+  const el=document.getElementById(which+'-reselect-row');
+  if(el) el.style.display = on ? 'flex' : 'none';
+}
+document.getElementById('lumen-reselect').addEventListener('click',()=>{
+  const fi=document.getElementById('file-input'); fi.value=''; fi.click();
+});
+document.getElementById('aura-reselect').addEventListener('click',()=>{
+  const fi=document.getElementById('aura-file-input'); fi.value=''; fi.click();
 });
 document.getElementById('lumen-placeholder').addEventListener('click',()=>{
   document.getElementById('file-input').value='';
@@ -1135,9 +1165,10 @@ function loadImageIntoAura(file){
       ensureAuraLayerBuffers(w,h);
 
       document.getElementById('aura-placeholder').style.display='none';
+  setReselectVisible('aura', true);
       document.getElementById('aura-meta').textContent=`${w} × ${h}`;
-      state.imageLoaded=true;
-      state.auraLights=[]; state.auraPreview=null;
+      studioState.imageLoaded=true;
+      studioState.auraLights=[]; studioState.auraPreview=null;
       if(typeof updateLightList==='function') updateLightList();
       redrawAura();
       if(typeof pushAuraHist==='function') pushAuraHist();
@@ -1181,9 +1212,10 @@ loadImageIntoAura._fromImg=function(img){
   lc.width=w;lc.height=h;lc.style.display='none';lc.style.mixBlendMode='normal';
   ensureAuraLayerBuffers(w,h);
   document.getElementById('aura-placeholder').style.display='none';
+  setReselectVisible('aura', true);
   document.getElementById('aura-meta').textContent=`${w} × ${h}`;
-  state.imageLoaded=true;
-  state.auraLights=[]; state.auraPreview=null;
+  studioState.imageLoaded=true;
+  studioState.auraLights=[]; studioState.auraPreview=null;
   if(typeof updateLightList==='function') updateLightList();
   redrawAura();
   if(typeof pushAuraHist==='function') pushAuraHist();
@@ -1221,26 +1253,26 @@ function loadImageFile(file) {
 // 画像読み込みの本体（ファイル/他工程からの受け渡し共通）
 // hasAlphaHint: true/false指定、nullなら実データから検出
 function applyLoadedImage(img, name, fmtLabel, hasAlphaHint) {
-  state.fileName = name || 'image';
-  state.originalImage = img;
+  studioState.fileName = name || 'image';
+  studioState.originalImage = img;
 
   // ── 原寸ImageDataを保存（Export用）──
   const fullC = document.createElement('canvas');
   fullC.width = img.width; fullC.height = img.height;
   const fullCtx = fullC.getContext('2d', {willReadFrequently:true});
   fullCtx.drawImage(img, 0, 0);
-  state.originalImageDataFull = fullCtx.getImageData(0, 0, img.width, img.height);
+  studioState.originalImageDataFull = fullCtx.getImageData(0, 0, img.width, img.height);
 
   // ── 透過検出（数十px間引きスキャン、hintがあればそれを採用）──
   if (hasAlphaHint === null || hasAlphaHint === undefined) {
-    const d = state.originalImageDataFull.data;
+    const d = studioState.originalImageDataFull.data;
     let alpha = false;
     for (let i = 3; i < d.length; i += 4 * 61) { // 61px毎に間引き
       if (d[i] < 255) { alpha = true; break; }
     }
-    state.hasAlpha = alpha;
+    studioState.hasAlpha = alpha;
   } else {
-    state.hasAlpha = !!hasAlphaHint;
+    studioState.hasAlpha = !!hasAlphaHint;
   }
 
   // ── 表示用にリサイズ（PREVIEW_MAX以下に縮小）──
@@ -1250,15 +1282,13 @@ function applyLoadedImage(img, name, fmtLabel, hasAlphaHint) {
     pw = Math.round(pw * ratio);
     ph = Math.round(ph * ratio);
   }
-  state.previewScale = { sw: img.width / pw, sh: img.height / ph };
-
   const prevC = document.createElement('canvas');
   prevC.width = pw; prevC.height = ph;
   const prevCtx = prevC.getContext('2d', {willReadFrequently:true});
   prevCtx.drawImage(img, 0, 0, pw, ph);
-  state.originalImageData = prevCtx.getImageData(0, 0, pw, ph);
+  studioState.originalImageData = prevCtx.getImageData(0, 0, pw, ph);
 
-  state.imageLoaded = true;
+  studioState.imageLoaded = true;
 
   // Lumen canvases（表示用サイズで初期化）
   const oc = document.getElementById('lumen-orig-canvas');
@@ -1271,12 +1301,10 @@ function applyLoadedImage(img, name, fmtLabel, hasAlphaHint) {
   pc.width = pw; pc.height = ph;
   pc.style.display = 'block';
   document.getElementById('lumen-placeholder').style.display = 'none';
+  setReselectVisible('lumen', true);
 
   document.getElementById('lumen-meta-size').textContent = `${img.width} × ${img.height}`;
-  document.getElementById('lumen-meta-fmt').textContent = (fmtLabel||'IMG') + (state.hasAlpha?' ・透過':'');
-
-  // タブ有効化（Auraは画像が要るのでここで解除）
-  document.querySelectorAll('[data-tab="aura"]').forEach(t=>t.classList.remove('disabled'));
+  document.getElementById('lumen-meta-fmt').textContent = (fmtLabel||'IMG') + (studioState.hasAlpha?' ・透過':'');
 
   applyLumen();
   lumHistReset();
@@ -1318,7 +1346,7 @@ function syncLumenSlider(slId, niId, key) {
   const ni = document.getElementById(niId);
   sl.addEventListener('input', () => {
     const v = parseInt(sl.value);
-    state.lumenParams[key] = v;
+    studioState.lumenParams[key] = v;
     ni.value = v;
     if (!showingOrig && !lumenPending) {
       lumenPending = true;
@@ -1329,7 +1357,7 @@ function syncLumenSlider(slId, niId, key) {
     const v = Math.max(parseInt(ni.min), Math.min(parseInt(ni.max), parseInt(ni.value) || 0));
     ni.value = v;
     sl.value = v;
-    state.lumenParams[key] = v;
+    studioState.lumenParams[key] = v;
     if (!showingOrig && !lumenPending) {
       lumenPending = true;
       requestAnimationFrame(() => { applyLumen(); lumenPending = false; });
@@ -1342,7 +1370,7 @@ lumenSliders.forEach(([slId, niId, key]) => syncLumenSlider(slId, niId, key));
 // LUMEN: アンドゥ/リドゥ（パラメータ履歴）
 // ═══════════════════════════════
 let lumHist=[], lumHp=-1;
-function lumSnap(){ return JSON.stringify(state.lumenParams); }
+function lumSnap(){ return JSON.stringify(studioState.lumenParams); }
 function lumHistReset(){ lumHist=[lumSnap()]; lumHp=0; updLumBtns(); }
 function pushLumHist(){
   const s=lumSnap();
@@ -1352,10 +1380,10 @@ function pushLumHist(){
   updLumBtns();
 }
 function lumApplySnap(s){
-  Object.assign(state.lumenParams, JSON.parse(s));
+  Object.assign(studioState.lumenParams, JSON.parse(s));
   lumenSliders.forEach(([slId, niId, key]) => {
-    document.getElementById(slId).value = state.lumenParams[key];
-    document.getElementById(niId).value = state.lumenParams[key];
+    document.getElementById(slId).value = studioState.lumenParams[key];
+    document.getElementById(niId).value = studioState.lumenParams[key];
   });
   applyLumen();
 }
@@ -1373,7 +1401,7 @@ lumenSliders.forEach(([slId, niId]) => {
   document.getElementById(niId).addEventListener('change', pushLumHist);
 });
 document.addEventListener('keydown',e=>{
-  if(state.currentTab!=='lumen')return;
+  if(studioState.currentTab!=='lumen')return;
   if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'){
     e.preventDefault();
     if(e.shiftKey) lumRedo(); else lumUndo();
@@ -1383,7 +1411,7 @@ document.addEventListener('keydown',e=>{
 // 画素処理を純粋関数に分離（原寸Export時も再利用できる）
 function applyLumenToData(src, w, h) {
   const out = new Uint8ClampedArray(src.length);
-  const p = state.lumenParams;
+  const p = studioState.lumenParams;
   const bf=p.brightness/100,cf=p.contrast/100,tf=p.temp/100,tif=p.tint/100;
   const sf=p.saturation/100,hlf=p.highlights/200,shf=p.shadows/200;
   for(let i=0;i<src.length;i+=4){
@@ -1408,15 +1436,15 @@ function applyLumenToData(src, w, h) {
 let histTimer = null;
 
 function applyLumen(){
-  if(!state.originalImageData)return;
-  const src=state.originalImageData.data;
-  const w=state.originalImageData.width,h=state.originalImageData.height;
+  if(!studioState.originalImageData)return;
+  const src=studioState.originalImageData.data;
+  const w=studioState.originalImageData.width,h=studioState.originalImageData.height;
   const final = applyLumenToData(src, w, h);
-  state.lumenImageData=new ImageData(new Uint8ClampedArray(final),w,h);
+  studioState.lumenImageData=new ImageData(new Uint8ClampedArray(final),w,h);
   const pc=document.getElementById('lumen-preview-canvas');
   const ctx=pc.getContext('2d');
   ctx.putImageData(new ImageData(final,w,h),0,0);
-  const p=state.lumenParams;
+  const p=studioState.lumenParams;
   if(p.vignette>0){
     const vs=p.vignette/100;
     const gr=ctx.createRadialGradient(w/2,h/2,Math.min(w,h)*0.3,w/2,h/2,Math.max(w,h)*0.72);
@@ -1470,7 +1498,7 @@ document.getElementById('cmp-edit').addEventListener('click',()=>{
   document.getElementById('cmp-orig').classList.remove('active');
 });
 document.getElementById('cmp-orig').addEventListener('click',()=>{
-  if(!state.imageLoaded)return;
+  if(!studioState.imageLoaded)return;
   showingOrig=true;
   document.getElementById('lumen-orig-canvas').style.display='block';
   document.getElementById('lumen-preview-canvas').style.display='none';
@@ -1478,26 +1506,49 @@ document.getElementById('cmp-orig').addEventListener('click',()=>{
   document.getElementById('cmp-edit').classList.remove('active');
 });
 
-// プリセット
+// プリセット（選んだあとに「効きの強さ」で濃度を変えられる）
+let presetBase=null;   // 選択中プリセットの100%時の値
+function syncLumenUI(){
+  lumenSliders.forEach(([slId, niId, key]) => {
+    document.getElementById(slId).value = studioState.lumenParams[key];
+    document.getElementById(niId).value = studioState.lumenParams[key];
+  });
+}
+function presetAmount(){ return parseInt(document.getElementById('sl-preset-amt').value)/100; }
+function applyPresetAmount(){
+  if(!presetBase) return;
+  const amt = presetAmount();
+  Object.entries(presetBase).forEach(([k,v])=>{
+    const max = (k==='hue') ? 180 : 100;
+    const min = (k==='sharpen'||k==='vignette') ? 0 : -max;
+    studioState.lumenParams[k] = Math.max(min, Math.min(max, Math.round(v*amt)));
+  });
+  syncLumenUI(); applyLumen();
+}
 document.querySelectorAll('.preset-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
-    Object.assign(state.lumenParams,LUMEN_PRESETS[btn.dataset.preset]);
-    lumenSliders.forEach(([slId, niId, key]) => {
-      document.getElementById(slId).value = state.lumenParams[key];
-      document.getElementById(niId).value = state.lumenParams[key];
-    });
+    presetBase = {...LUMEN_PRESETS[btn.dataset.preset]};
     document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    applyLumen(); pushLumHist(); showToast(`プリセット: ${btn.textContent}`);
+    applyPresetAmount(); pushLumHist();
+    showToast(`プリセット: ${btn.textContent} ${Math.round(presetAmount()*100)}%`);
   });
 });
+(()=>{
+  const sl=document.getElementById('sl-preset-amt'), ni=document.getElementById('ni-preset-amt');
+  const upd=v=>{ sl.value=v; ni.value=v; if(presetBase) applyPresetAmount(); };
+  sl.addEventListener('input',()=>upd(sl.value));
+  ni.addEventListener('input',()=>upd(Math.max(0,Math.min(150,parseInt(ni.value)||0))));
+  sl.addEventListener('change',()=>{ if(presetBase) pushLumHist(); });
+  ni.addEventListener('change',()=>{ if(presetBase) pushLumHist(); });
+})();
 
 document.getElementById('lumen-reset').addEventListener('click', () => {
-  Object.keys(state.lumenParams).forEach(k => state.lumenParams[k] = 0);
-  lumenSliders.forEach(([slId, niId]) => {
-    document.getElementById(slId).value = 0;
-    document.getElementById(niId).value = 0;
-  });
+  Object.keys(studioState.lumenParams).forEach(k => studioState.lumenParams[k] = 0);
+  syncLumenUI();
+  presetBase=null;
+  document.getElementById('sl-preset-amt').value=100;
+  document.getElementById('ni-preset-amt').value=100;
   document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
   applyLumen(); pushLumHist(); showToast('リセットしました');
 });
@@ -1582,16 +1633,16 @@ function downloadBlobURL(blob, filename){
 }
 
 document.getElementById('lumen-export').addEventListener('click',()=>{
-  if(!state.imageLoaded){showToast('画像がありません');return;}
+  if(!studioState.imageLoaded){showToast('画像がありません');return;}
   showToast('原寸で書き出し中...');
   setTimeout(()=>{
     const url = getLumenDataURL(true); // 原寸
-    shareOrDownloadDataURL(url, `${state.fileName}_lumen.png`);
+    shareOrDownloadDataURL(url, `${studioState.fileName}_lumen.png`);
   }, 50);
 });
 
 document.getElementById('lumen-to-aura').addEventListener('click',()=>{
-  if(!state.imageLoaded){showToast('画像がありません');return;}
+  if(!studioState.imageLoaded){showToast('画像がありません');return;}
   auraOwnImage=false; // 明示的に渡されたときはLumen結果で置き換える
   switchTab('aura');showToast('Auraへ渡しました');
 });
@@ -1670,13 +1721,15 @@ function drawAuraLayer(ctx,key){
 }
 
 function transferLumenToAura(){
-  if(!state.lumenImageData)return;
+  const pc=document.getElementById('lumen-preview-canvas');
+  // 画像が実際に読み込まれているときだけ渡す（canvasは未使用でも初期サイズを持つため）
+  if(!pc||!pc.width||!studioState.imageLoaded||!studioState.lumenImageData)return;
   auraOwnImage=false;
-  const {width:w,height:h}=state.lumenImageData;
-  // Lumen結果をオフスクリーンに保持
+  const w=pc.width, h=pc.height;
+  // Lumenの「見えている結果」（ビネット込み）をそのまま保持する
   auraImageCanvas=document.createElement('canvas');
   auraImageCanvas.width=w; auraImageCanvas.height=h;
-  auraImageCanvas.getContext('2d').putImageData(state.lumenImageData,0,0);
+  auraImageCanvas.getContext('2d').drawImage(pc,0,0);
   // 表示キャンバス（ここに全部合成する）
   const bc=document.getElementById('aura-base-canvas');
   bc.width=w;bc.height=h;
@@ -1688,6 +1741,7 @@ function transferLumenToAura(){
   lc.style.mixBlendMode='normal';
   ensureAuraLayerBuffers(w,h);
   document.getElementById('aura-placeholder').style.display='none';
+  setReselectVisible('aura', true);
   document.getElementById('aura-meta').textContent=`${w} × ${h}`;
   redrawAura();
 }
@@ -1706,12 +1760,12 @@ function redrawAura(){
   // 1) 光源をオフスクリーンlcに描く（確定分キャッシュ＋プレビュー）
   const lctx = lc.getContext('2d');
   lctx.clearRect(0, 0, lc.width, lc.height);
-  state.auraLights.forEach(l => {
+  studioState.auraLights.forEach(l => {
     if (!l._cache) return;
     lctx.drawImage(l._cache, 0, 0);
   });
-  if (state.auraPreview) {
-    const p = state.auraPreview;
+  if (studioState.auraPreview) {
+    const p = studioState.auraPreview;
     drawOneLight(lctx, lc, p.x, p.y, p.color, p.bright, p.core || 18, p.radius, p.softness, p.diffuse);
   }
 
@@ -1724,7 +1778,7 @@ function redrawAura(){
   ctx.drawImage(auraImageCanvas, 0, 0);
   drawAuraLayer(ctx,'f1');
   drawAuraLayer(ctx,'f2');
-  ctx.globalCompositeOperation = state.auraBlendMode;
+  ctx.globalCompositeOperation = studioState.auraBlendMode;
   ctx.drawImage(lc, 0, 0);
   ctx.globalCompositeOperation = 'source-over';
 }
@@ -1799,9 +1853,9 @@ function getAuraPixelPos(clientX, clientY) {
 function updateAuraPreview(clientX, clientY) {
   const pos = getAuraPixelPos(clientX, clientY);
   const p = getAuraParams();
-  state.auraPreview = {
+  studioState.auraPreview = {
     x: pos.x, y: pos.y,
-    color: state.auraColor,
+    color: studioState.auraColor,
     bright:  p.bright,
     core:    p.core,
     radius:  p.radius,
@@ -1826,14 +1880,14 @@ auraWrap.addEventListener('pointerdown', e => {
   updateAuraPreview(e.clientX, e.clientY);
 });
 auraWrap.addEventListener('pointermove', e => {
-  if (!state.imageLoaded || e.buttons !== 1) return;
+  if (!studioState.imageLoaded || e.buttons !== 1) return;
   if (maskEditKey){ maskPointer(e,'move'); e.preventDefault(); return; }
   updateAuraPreview(e.clientX, e.clientY);
 });
 auraWrap.addEventListener('pointerup', e => {
   auraWrap.releasePointerCapture(e.pointerId);
   if (maskEditKey){ maskPointer(e,'up'); return; }
-  if (!state.imageLoaded) return;
+  if (!studioState.imageLoaded) return;
   commitAuraLight(); // 置いた場所で即確定
 });
 
@@ -1863,13 +1917,13 @@ function getAuraParams() {
 }
 
 function updatePreviewFromSliders() {
-  if (state.auraPreview) {
+  if (studioState.auraPreview) {
     const p = getAuraParams();
-    state.auraPreview.bright  = p.bright;
-    state.auraPreview.core    = p.core;
-    state.auraPreview.radius  = p.radius;
-    state.auraPreview.softness = p.softness;
-    state.auraPreview.diffuse = p.diffuse;
+    studioState.auraPreview.bright  = p.bright;
+    studioState.auraPreview.core    = p.core;
+    studioState.auraPreview.radius  = p.radius;
+    studioState.auraPreview.softness = p.softness;
+    studioState.auraPreview.diffuse = p.diffuse;
   }
   scheduleAura();
 }
@@ -1881,19 +1935,19 @@ syncAuraSlider('sl-arays',    'ni-arays',    updatePreviewFromSliders);
 syncAuraSlider('sl-adiffuse', 'ni-adiffuse', updatePreviewFromSliders);
 
 document.getElementById('aura-color').addEventListener('input',e=>{
-  state.auraColor = e.target.value.toLowerCase();
-  document.getElementById('aura-hex').textContent = state.auraColor.toUpperCase();
-  if(state.auraPreview) state.auraPreview.color = state.auraColor;
+  studioState.auraColor = e.target.value.toLowerCase();
+  document.getElementById('aura-hex').textContent = studioState.auraColor.toUpperCase();
+  if(studioState.auraPreview) studioState.auraPreview.color = studioState.auraColor;
   scheduleAura();
 });
 document.querySelectorAll('.cswatch').forEach(sw=>{
   sw.addEventListener('click',()=>{
-    state.auraColor = sw.dataset.color.toLowerCase();
-    document.getElementById('aura-color').value = state.auraColor;
-    document.getElementById('aura-hex').textContent = state.auraColor.toUpperCase();
+    studioState.auraColor = sw.dataset.color.toLowerCase();
+    document.getElementById('aura-color').value = studioState.auraColor;
+    document.getElementById('aura-hex').textContent = studioState.auraColor.toUpperCase();
     document.querySelectorAll('.cswatch').forEach(s=>s.classList.remove('active'));
     sw.classList.add('active');
-    if(state.auraPreview) state.auraPreview.color = state.auraColor;
+    if(studioState.auraPreview) studioState.auraPreview.color = studioState.auraColor;
     scheduleAura();
   });
 });
@@ -1902,35 +1956,35 @@ document.querySelectorAll('.blend-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.blend-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    state.auraBlendMode=btn.dataset.blend;
+    studioState.auraBlendMode=btn.dataset.blend;
     scheduleAura(); pushAuraHist();
   });
 });
 
 // 置いた光をその場で確定する（確定ボタンは廃止／やり直しは↶で）
 function commitAuraLight(){
-  if(!state.auraPreview) return;
+  if(!studioState.auraPreview) return;
   const lc = document.getElementById('aura-light-canvas');
   const off = document.createElement('canvas');
   off.width = lc.width; off.height = lc.height;
   const offCtx = off.getContext('2d');
-  const p = state.auraPreview;
+  const p = studioState.auraPreview;
   drawOneLight(offCtx, off, p.x, p.y, p.color, p.bright, p.core||18, p.radius, p.softness, p.diffuse);
 
-  state.auraLights.push({...state.auraPreview, _cache: off});
-  state.auraPreview = null;
+  studioState.auraLights.push({...studioState.auraPreview, _cache: off});
+  studioState.auraPreview = null;
   updateLightList(); scheduleAura(); pushAuraHist();
-  showToast(`光を置きました（計 ${state.auraLights.length} 個・↶で取り消し）`);
+  showToast(`光を置きました（計 ${studioState.auraLights.length} 個・↶で取り消し）`);
 }
 
 function updateLightList(){
   const list=document.getElementById('light-list');
-  document.getElementById('light-count').textContent=`${state.auraLights.length}個`;
-  if(state.auraLights.length===0){
+  document.getElementById('light-count').textContent=`${studioState.auraLights.length}個`;
+  if(studioState.auraLights.length===0){
     list.innerHTML='<div style="font-size:10px;color:var(--text-dim)">光源がありません</div>';return;
   }
   list.innerHTML='';
-  state.auraLights.forEach((l,i)=>{
+  studioState.auraLights.forEach((l,i)=>{
     const item=document.createElement('div');item.className='light-item';
     item.innerHTML=`<div class="light-swatch" style="background:${l.color}"></div>
       <div class="light-info">光源${i+1} R${l.radius} ${Math.round(l.bright*100)}%</div>
@@ -1939,7 +1993,7 @@ function updateLightList(){
   });
   list.querySelectorAll('.light-del').forEach(btn=>{
     btn.addEventListener('click',()=>{
-      state.auraLights.splice(parseInt(btn.dataset.idx),1);
+      studioState.auraLights.splice(parseInt(btn.dataset.idx),1);
       updateLightList();scheduleAura();pushAuraHist();showToast('光源を削除しました');
     });
   });
@@ -2031,7 +2085,7 @@ function renderAuraLayers(){
 }
 
 function enterMaskEdit(key,label){
-  if(!state.imageLoaded){ showToast('先にLumenで画像を読み込んでください'); return; }
+  if(!studioState.imageLoaded){ showToast('先にLumenで画像を読み込んでください'); return; }
   maskEditKey=key;
   document.getElementById('aura-maskbar').classList.add('show');
   document.getElementById('aura-maskbar-name').textContent=label+' を編集中';
@@ -2115,8 +2169,8 @@ function auraSnap(){
     masks[k]=L.mask?rleEnc8(L.mask):null;
   });
   return {
-    lights: state.auraLights.map(l=>({x:l.x,y:l.y,color:l.color,bright:l.bright,core:l.core,radius:l.radius,rays:l.rays,diffuse:l.diffuse})),
-    blend: state.auraBlendMode,
+    lights: studioState.auraLights.map(l=>({x:l.x,y:l.y,color:l.color,bright:l.bright,core:l.core,radius:l.radius,softness:l.softness,diffuse:l.diffuse})),
+    blend: studioState.auraBlendMode,
     layers, masks,
   };
 }
@@ -2130,14 +2184,14 @@ function pushAuraHist(){
 function auraApplySnap(s){
   const lc=document.getElementById('aura-light-canvas');
   // 光源：キャッシュ再生成
-  state.auraLights = s.lights.map(l=>{
+  studioState.auraLights = s.lights.map(l=>{
     const off=document.createElement('canvas');
     off.width=lc.width; off.height=lc.height;
-    drawOneLight(off.getContext('2d'), off, l.x, l.y, l.color, l.bright, l.core||18, l.radius, l.rays, l.diffuse);
+    drawOneLight(off.getContext('2d'), off, l.x, l.y, l.color, l.bright, l.core||18, l.radius, l.softness, l.diffuse);
     return {...l,_cache:off};
   });
-  state.auraPreview=null;
-  state.auraBlendMode=s.blend;
+  studioState.auraPreview=null;
+  studioState.auraBlendMode=s.blend;
   document.querySelectorAll('.blend-btn').forEach(b=>b.classList.toggle('active',b.dataset.blend===s.blend));
   // レイヤー
   Object.entries(s.layers).forEach(([k,cfg])=>{
@@ -2157,7 +2211,7 @@ function updAuraBtns(){
 document.getElementById('aura-undo').addEventListener('click',auraUndo);
 document.getElementById('aura-redo').addEventListener('click',auraRedo);
 document.addEventListener('keydown',e=>{
-  if(state.currentTab!=='aura')return;
+  if(studioState.currentTab!=='aura')return;
   if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='z'){
     e.preventDefault();
     if(e.shiftKey) auraRedo(); else auraUndo();
@@ -2176,12 +2230,12 @@ document.getElementById('aura-to-board').addEventListener('click',()=>{
   showToast('Boardへ！写真パーツ→「スナップから」で選べます');
 });
 document.getElementById('aura-reset-all').addEventListener('click',()=>{
-  state.auraLights=[];state.auraPreview=null;updateLightList();scheduleAura();pushAuraHist();showToast('全光源リセット');
+  studioState.auraLights=[];studioState.auraPreview=null;updateLightList();scheduleAura();pushAuraHist();showToast('全光源リセット');
 });
 document.getElementById('aura-export').addEventListener('click',()=>{
-  if(!state.imageLoaded){showToast('画像がありません');return;}
+  if(!studioState.imageLoaded){showToast('画像がありません');return;}
   const url=getAuraCompositeDataURL();if(!url){showToast('Auraに画像がありません');return;}
-  shareOrDownloadDataURL(url, `${state.fileName}_aura.png`);
+  shareOrDownloadDataURL(url, `${studioState.fileName}_aura.png`);
 });
 
 // ═══════════════════════════════
@@ -2190,13 +2244,13 @@ document.getElementById('aura-export').addEventListener('click',()=>{
 document.querySelectorAll('.tab').forEach(tab=>{
   tab.addEventListener('click',()=>{
     const target=tab.dataset.tab;
-    if(target===state.currentTab||tab.classList.contains('disabled'))return;
+    if(target===studioState.currentTab||tab.classList.contains('disabled'))return;
     switchTab(target);
   });
 });
 
 function switchTab(tab){
-  state.currentTab=tab;
+  studioState.currentTab=tab;
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===`panel-${tab}`));
   if(tab==='lumen'){
@@ -2205,7 +2259,10 @@ function switchTab(tab){
   }
   if(tab==='aura'){
     // Aura内で直接読み込んだ画像がある場合はそれを維持し、Lumen結果で上書きしない
-    if(!auraOwnImage) setTimeout(()=>transferLumenToAura(),50);
+    if(!auraOwnImage) setTimeout(()=>autoHandoffToLumen(()=>{
+      // Lumenの描画反映を1フレーム待ってから渡す
+      requestAnimationFrame(()=>transferLumenToAura());
+    }),50);
   }
   if(tab==='board'){
     setTimeout(()=>{ if(window.ParsBoard) window.ParsBoard.show(); },60);
@@ -2218,21 +2275,21 @@ function switchTab(tab){
 window.ParsSnaps = {
   add(dataURL, label){
     if(!dataURL){ showToast('画像がありません'); return false; }
-    if(state.snapshots.length>=5){ showToast('最大5枚まで保持できます'); return false; }
-    state.snapshots.push({dataURL, label: label||'スナップ'});
+    if(studioState.snapshots.length>=5){ showToast('最大5枚まで保持できます'); return false; }
+    studioState.snapshots.push({dataURL, label: label||'スナップ'});
     renderSnapshots();
-    showToast(`スナップ保存 (${state.snapshots.length}/5)`);
+    showToast(`スナップ保存 (${studioState.snapshots.length}/5)`);
     return true;
   },
-  list(){ return state.snapshots; },
+  list(){ return studioState.snapshots; },
 };
 
 // 各ツールの「現在の絵」を取り出す共通ブリッジ（Boardの写真選択などで使用）
 window.ParsBridge = {
-  getLumen: ()=> state.imageLoaded ? getLumenDataURL() : null,
-  getAura:  ()=> state.imageLoaded ? getAuraCompositeDataURL() : null,
+  getLumen: ()=> studioState.imageLoaded ? getLumenDataURL() : null,
+  getAura:  ()=> studioState.imageLoaded ? getAuraCompositeDataURL() : null,
   getCutout:()=> (window.__parsCutoutGetDataURL ? window.__parsCutoutGetDataURL() : null),
-  snaps:    ()=> state.snapshots,
+  snaps:    ()=> studioState.snapshots,
   goTab:    (t)=> switchTab(t),
   // 他工程からLumenへ画像を渡す（hasAlpha=trueで透過保持）
   loadIntoLumen(dataURL, name, hasAlpha){
@@ -2244,31 +2301,35 @@ window.ParsBridge = {
 
 // Cutout → Lumen の自動引き継ぎ。同じ結果を二重に読み込まないよう署名で判定する
 let lastHandoffSig = null;
-function autoHandoffToLumen(){
+// done: 引き継ぎ完了後（新規読み込みが無い場合も）に呼ばれる
+function autoHandoffToLumen(done){
+  const fin = ()=>{ if(typeof done==='function') done(); };
   const get = window.__parsCutoutGetDataURL;
-  if(!get) return;
+  if(!get) return fin();
   let url=null;
-  try{ url = get(); }catch(e){ return; }
-  if(!url) return;                       // Cutoutにまだ結果がない
+  try{ url = get(); }catch(e){ return fin(); }
+  if(!url) return fin();                 // Cutoutにまだ結果がない
   const sig = url.length + ':' + url.slice(-64);   // 内容が変わったかの簡易署名
-  if(sig === lastHandoffSig) return;     // すでに引き継ぎ済み
+  if(sig === lastHandoffSig) return fin();         // すでに引き継ぎ済み
   lastHandoffSig = sig;
   const img = new Image();
   img.onload = ()=>{
     applyLoadedImage(img, 'cutout', 'PNG', true);
     auraOwnImage = false;                // Auraにも新しい結果が流れるようにする
+    fin();                               // 読み込み完了後に次の工程へ
   };
+  img.onerror = fin;
   img.src = url;
 }
 
 document.getElementById('snap-save').addEventListener('click', () => {
-  const tab = state.currentTab;
+  const tab = studioState.currentTab;
   let dataURL = null, defaultLabel = 'スナップ';
   if (tab === 'lumen') {
-    if(!state.imageLoaded){ showToast('画像がありません'); return; }
+    if(!studioState.imageLoaded){ showToast('画像がありません'); return; }
     dataURL = getLumenDataURL(); defaultLabel = 'Lumen補正';
   } else if (tab === 'aura') {
-    if(!state.imageLoaded){ showToast('画像がありません'); return; }
+    if(!studioState.imageLoaded){ showToast('画像がありません'); return; }
     dataURL = getAuraCompositeDataURL(); defaultLabel = 'Aura合成';
   } else if (tab === 'cutout') {
     dataURL = window.ParsBridge.getCutout(); defaultLabel = 'Cutout';
@@ -2277,7 +2338,7 @@ document.getElementById('snap-save').addEventListener('click', () => {
     showToast('Lumen・Aura・Cutoutタブで保存できます'); return;
   }
   if (!dataURL) { showToast('画像がありません'); return; }
-  if (state.snapshots.length >= 5) { showToast('最大5枚まで保持できます'); return; }
+  if (studioState.snapshots.length >= 5) { showToast('最大5枚まで保持できます'); return; }
   showSnapLabelDialog(dataURL, defaultLabel);
 });
 
@@ -2309,10 +2370,10 @@ function showSnapLabelDialog(dataURL, defaultLabel) {
   document.getElementById('snap-label-cancel').addEventListener('click', () => overlay.remove());
   document.getElementById('snap-label-ok').addEventListener('click', () => {
     const label = input.value.trim() || defaultLabel;
-    state.snapshots.push({ dataURL, label });
+    studioState.snapshots.push({ dataURL, label });
     renderSnapshots();
     overlay.remove();
-    showToast(`スナップ保存 (${state.snapshots.length}/5)`);
+    showToast(`スナップ保存 (${studioState.snapshots.length}/5)`);
   });
   input.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('snap-label-ok').click(); });
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
@@ -2321,19 +2382,19 @@ function showSnapLabelDialog(dataURL, defaultLabel) {
 function renderSnapshots(){
   const slots=document.getElementById('snap-slots');
   slots.innerHTML='';
-  state.snapshots.forEach((snap,i)=>{
+  studioState.snapshots.forEach((snap,i)=>{
     const el=document.createElement('div');el.className='snap-slot';
     el.title=snap.label;
     el.innerHTML=`<img src="${snap.dataURL}"><button class="snap-del" title="削除">×</button>`;
     el.querySelector('.snap-del').addEventListener('click',e=>{
       e.stopPropagation();
-      state.snapshots.splice(i,1);
+      studioState.snapshots.splice(i,1);
       renderSnapshots();
       showToast('スナップを削除しました');
     });
     slots.appendChild(el);
   });
-  document.getElementById('snap-count').textContent=`${state.snapshots.length} / 5`;
+  document.getElementById('snap-count').textContent=`${studioState.snapshots.length} / 5`;
 }
 
 // プレビューモーダル閉じる（共通）
@@ -2350,7 +2411,7 @@ document.getElementById('preview-modal-close').addEventListener('click', () => {
 (function(){
 
 // ══════════ Config ══════════
-const BOARD_SIZES = { '16x9':{w:960,h:540}, 'a3x':{w:842,h:595}, 'a3y':{w:595,h:842}, 'a4y':{w:595,h:842} };
+const BOARD_SIZES = { '16x9':{w:960,h:540}, 'a3x':{w:842,h:595}, 'a3y':{w:842,h:1191}, 'a4y':{w:595,h:842} };
 
 const GRIDS = { '4x4':{c:4,r:4}, '6x8':{c:6,r:8}, '8x12':{c:8,r:12} };
 
@@ -2378,11 +2439,11 @@ function normalizeEl(el){ // backfill fields on older elements
   return el;
 }
 
-// ══════════ History (undo/redo): whole-state snapshots ══════════
+// ══════════ History (undo/redo): 全体スナップショット方式 ══════════
 let hist=[], hp=-1, histTimer=null;
 function snapState(){
-  return JSON.stringify({ els:state.els, size:state.size, grid:state.grid,
-    taste:state.taste, colorMode:state.colorMode, accent:state.accent, preset:state.preset });
+  return JSON.stringify({ els:boardState.els, size:boardState.size, grid:boardState.grid,
+    taste:boardState.taste, colorMode:boardState.colorMode, accent:boardState.accent, preset:boardState.preset });
 }
 function pushHist(immediate){
   clearTimeout(histTimer);
@@ -2397,9 +2458,9 @@ function pushHist(immediate){
 }
 function restoreState(s){
   const o=JSON.parse(s);
-  state.els=o.els.map(normalizeEl); state.size=o.size; state.grid=o.grid;
-  state.taste=o.taste; state.colorMode=o.colorMode; state.accent=o.accent; state.preset=o.preset;
-  state.selId=null; state.pickRange=null;
+  boardState.els=o.els.map(normalizeEl); boardState.size=o.size; boardState.grid=o.grid;
+  boardState.taste=o.taste; boardState.colorMode=o.colorMode; boardState.accent=o.accent; boardState.preset=o.preset;
+  boardState.selId=null; boardState.pickRange=null;
   syncControlsFromState(); computeColors(); render(); renderEditor(); renderDetail();
 }
 function undo(){ if(hp>0){ hp--; restoreState(hist[hp]); updHistBtns(); } }
@@ -2409,14 +2470,14 @@ function updHistBtns(){
   document.getElementById('btn-redo').disabled = hp>=hist.length-1;
 }
 function syncControlsFromState(){
-  document.querySelectorAll('#size-chips .chip').forEach(c=>c.classList.toggle('on',c.dataset.size===state.size));
-  document.querySelectorAll('#grid-chips .chip').forEach(c=>c.classList.toggle('on',c.dataset.grid===state.grid));
-  document.querySelectorAll('#panel-board .preset-chip').forEach(c=>c.classList.toggle('on',c.dataset.preset===state.preset));
-  document.querySelectorAll('#panel-board .theory-btn').forEach(b=>b.classList.toggle('on',b.dataset.mode===state.colorMode));
-  const bc=document.getElementById('board-color'); if(bc) bc.value=state.accent;
+  document.querySelectorAll('#size-chips .chip').forEach(c=>c.classList.toggle('on',c.dataset.size===boardState.size));
+  document.querySelectorAll('#grid-chips .chip').forEach(c=>c.classList.toggle('on',c.dataset.grid===boardState.grid));
+  document.querySelectorAll('#panel-board .preset-chip').forEach(c=>c.classList.toggle('on',c.dataset.preset===boardState.preset));
+  document.querySelectorAll('#panel-board .theory-btn').forEach(b=>b.classList.toggle('on',b.dataset.mode===boardState.colorMode));
+  const bc=document.getElementById('board-color'); if(bc) bc.value=boardState.accent;
 }
 
-const state = {
+const boardState = {
   size: '16x9',
   grid: '6x8',
   taste: 'wa',
@@ -2433,10 +2494,10 @@ const state = {
 };
 
 // ══════════ Utils ══════════
-function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('show'),2200); }
+const toast=m=>window.ParsUI.toast(m);
 function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function cur(){ return state.els.find(e=>e.id===state.selId)||null; }
-function gridDims(){ return GRIDS[state.grid]; }
+function cur(){ return boardState.els.find(e=>e.id===boardState.selId)||null; }
+function gridDims(){ return GRIDS[boardState.grid]; }
 function boardActive(){ const p=document.getElementById('panel-board'); return p && p.classList.contains('active'); }
 
 // ══════════ Color engine ══════════
@@ -2457,12 +2518,12 @@ function hslToHex(h,s,l){
   return `#${x(r)}${x(g)}${x(b)}`;
 }
 function computeColors(){
-  const base=hexToHsl(state.accent);
+  const base=hexToHsl(boardState.accent);
   let accentH=base.h,mainH=base.h,baseH=base.h;
   let accentS=Math.max(35,base.s),mainS=Math.max(12,base.s*0.30),baseS=Math.max(8,base.s*0.16);
   let accentL=Math.min(42,base.l),mainL=88,baseL=95;
-  if(state.colorMode==='contrast'){ mainH=(base.h+180)%360; mainS=Math.max(14,base.s*0.32); mainL=86; }
-  else if(state.colorMode==='modern'){ accentS=Math.min(22,base.s*0.4); mainS=6; baseS=4; mainL=91; baseL=97; }
+  if(boardState.colorMode==='contrast'){ mainH=(base.h+180)%360; mainS=Math.max(14,base.s*0.32); mainL=86; }
+  else if(boardState.colorMode==='modern'){ accentS=Math.min(22,base.s*0.4); mainS=6; baseS=4; mainL=91; baseL=97; }
   const aHex=hslToHex(accentH,accentS,accentL),mHex=hslToHex(mainH,mainS,mainL),bHex=hslToHex(baseH,baseS,baseL);
   document.documentElement.style.setProperty('--c-accent',aHex);
   document.documentElement.style.setProperty('--c-main',mHex);
@@ -2476,7 +2537,7 @@ const MARGIN_RATIO = 0.045;  // board margin as fraction of short side
 const GUTTER_RATIO = 0.018;
 
 function boardMetrics(){
-  const sz = BOARD_SIZES[state.size];
+  const sz = BOARD_SIZES[boardState.size];
   const short = Math.min(sz.w, sz.h);
   const margin = short * MARGIN_RATIO;
   const gutter = short * GUTTER_RATIO;
@@ -2506,7 +2567,7 @@ function cellAtPx(px,py){
 
 // ══════════ Board sizing: native + direct display px ══════════
 function applySize(){
-  const sz=BOARD_SIZES[state.size];
+  const sz=BOARD_SIZES[boardState.size];
   const area=document.getElementById('preview-area');
   const rect=area.getBoundingClientRect();
   const outer=document.getElementById('board-outer');
@@ -2517,7 +2578,7 @@ function applySize(){
   outer.style.transform='none';
   outer.style.width=Math.round(sz.w*scale)+'px';
   outer.style.height=Math.round(sz.h*scale)+'px';
-  state._scale=scale;
+  boardState._scale=scale;
   document.getElementById('flow-svg').setAttribute('viewBox',`0 0 ${sz.w} ${sz.h}`);
 }
 
@@ -2526,18 +2587,18 @@ function render(){
   const outer=document.getElementById('board-outer');
   applySize(); // single source of truth for board sizing (display px, correct aspect)
   outer.style.background='var(--c-base)';
-  outer.style.setProperty('--font-display', TASTES[state.taste].display);
-  outer.style.setProperty('--font-body', TASTES[state.taste].body);
+  outer.style.setProperty('--font-display', TASTES[boardState.taste].display);
+  outer.style.setProperty('--font-body', TASTES[boardState.taste].body);
   renderCells();
   renderTiles();
   renderMini();
   renderList();
-  if(state.showFlow) calcFlow(); else clearFlow();
+  if(boardState.showFlow) calcFlow(); else clearFlow();
 }
 
 // convert a native rect to % of board (position can never overflow the board)
 function pct(r){
-  const sz=BOARD_SIZES[state.size];
+  const sz=BOARD_SIZES[boardState.size];
   return {
     left:(r.x/sz.w*100)+'%', top:(r.y/sz.h*100)+'%',
     width:(r.w/sz.w*100)+'%', height:(r.h/sz.h*100)+'%',
@@ -2548,14 +2609,14 @@ function renderCells(){
   const layer=document.getElementById('cells-layer');
   layer.innerHTML='';
   const m=boardMetrics();
-  const range=state.pickRange;
+  const range=boardState.pickRange;
   const occ=occupiedSet();
   const own=selfSet();
   const badSel = range && rangeOverlaps(range,occ);
   for(let r=0;r<m.rows;r++)for(let c=0;c<m.cols;c++){
     const d=document.createElement('div');
     d.className='cell-hit';
-    if(state.showGuide) d.style.borderColor='rgba(138,94,40,0.18)';
+    if(boardState.showGuide) d.style.borderColor='rgba(138,94,40,0.18)';
     if(occ.has(r+','+c)) d.style.background='rgba(138,94,40,0.05)';
     else if(own.has(r+','+c)) d.style.background='rgba(120,155,180,0.18)';
     let inR=false;
@@ -2566,7 +2627,7 @@ function renderCells(){
     d.style.left=p.left;d.style.top=p.top;d.style.width=p.width;d.style.height=p.height;
     d.dataset.c=c;d.dataset.r=r;
     layer.appendChild(d);
-    if(state.showGuide){
+    if(boardState.showGuide){
       const n=document.createElement('div');n.className='cell-num';n.textContent=`${r+1}-${c+1}`;
       n.style.left=`calc(${p.left} + 2px)`;n.style.top=`calc(${p.top} + 2px)`;layer.appendChild(n);
     }
@@ -2629,18 +2690,18 @@ function renderTiles(){
   const outer=document.getElementById('board-outer');
   [...outer.querySelectorAll('.tile')].forEach(n=>n.remove());
   const fitQueue=[];
-  state.els.forEach(el=>{
+  boardState.els.forEach(el=>{
     if(!el.cell) return; // unplaced: not shown on board
     normalizeEl(el);
     const r=cellRect(el.cell.c0,el.cell.r0,el.cell.c1,el.cell.r1);
     const node=document.createElement('div');
-    node.className='tile'+(el.id===state.selId?' sel':'');
+    node.className='tile'+(el.id===boardState.selId?' sel':'');
     const p=pct(r);
     node.style.left=p.left;node.style.top=p.top;node.style.width=p.width;node.style.height=p.height;
     node.dataset.id=el.id;
     if(el.radius) node.style.borderRadius=el.radius+'px';
     // stacking: text above images (for allowed overlaps)
-    node.style.zIndex = el.id===state.selId ? 9 : (el.type==='image' ? 5 : 6);
+    node.style.zIndex = el.id===boardState.selId ? 9 : (el.type==='image' ? 5 : 6);
     if(el.type==='image'){
       if(el.src){
         const fit=el.fit||'cover', focus=el.focus||'center';
@@ -2684,8 +2745,8 @@ function cellLabel(cell){
 // set of "r,c" keys occupied by placed elements (excluding the selected one)
 function occupiedSet(){
   const s=new Set();
-  state.els.forEach(el=>{
-    if(!el.cell||el.id===state.selId) return;
+  boardState.els.forEach(el=>{
+    if(!el.cell||el.id===boardState.selId) return;
     const cA=Math.min(el.cell.c0,el.cell.c1),cB=Math.max(el.cell.c0,el.cell.c1);
     const rA=Math.min(el.cell.r0,el.cell.r1),rB=Math.max(el.cell.r0,el.cell.r1);
     for(let r=rA;r<=rB;r++)for(let c=cA;c<=cB;c++)s.add(r+','+c);
@@ -2710,7 +2771,7 @@ function selfSet(){
 // max number of OTHER elements already stacked on any cell in `range`
 function stackAt(range, excludeId){
   const counts={};
-  state.els.forEach(el=>{
+  boardState.els.forEach(el=>{
     if(!el.cell||el.id===excludeId) return;
     const cA=Math.min(el.cell.c0,el.cell.c1),cB=Math.max(el.cell.c0,el.cell.c1);
     const rA=Math.min(el.cell.r0,el.cell.r1),rB=Math.max(el.cell.r0,el.cell.r1);
@@ -2748,7 +2809,7 @@ function renderMini(){
     d.dataset.c=c;d.dataset.r=r;
     if(occ.has(r+','+c)) d.classList.add('occ');
     else if(own.has(r+','+c)) d.classList.add('own');
-    const range=state.pickRange;
+    const range=boardState.pickRange;
     if(range){const cA=Math.min(range.c0,range.c1),cB=Math.max(range.c0,range.c1),rA=Math.min(range.r0,range.r1),rB=Math.max(range.r0,range.r1);if(c>=cA&&c<=cB&&r>=rA&&r<=rB)d.classList.add(rangeOverlaps(range,occ)?'sel-bad':'sel');}
     g.appendChild(d);
   }
@@ -2766,7 +2827,7 @@ document.getElementById('mini-grid').addEventListener('pointermove',e=>{
   const cc=+c.dataset.c, rr=+c.dataset.r;
   if(cc!==miniStart.c||rr!==miniStart.r) miniMoved=true;
   if(miniMoved){
-    state.pickRange={c0:miniStart.c,r0:miniStart.r,c1:cc,r1:rr};
+    boardState.pickRange={c0:miniStart.c,r0:miniStart.r,c1:cc,r1:rr};
     tapAnchor=null;
     updatePlaceNote();renderMini();renderCells();
   }
@@ -2777,11 +2838,11 @@ document.getElementById('mini-grid').addEventListener('pointerup',e=>{
   if(!miniMoved){
     // tap
     if(tapAnchor){
-      state.pickRange={c0:tapAnchor.c,r0:tapAnchor.r,c1:miniStart.c,r1:miniStart.r};
+      boardState.pickRange={c0:tapAnchor.c,r0:tapAnchor.r,c1:miniStart.c,r1:miniStart.r};
       tapAnchor=null;
     }else{
       tapAnchor={...miniStart};
-      state.pickRange={c0:miniStart.c,r0:miniStart.r,c1:miniStart.c,r1:miniStart.r};
+      boardState.pickRange={c0:miniStart.c,r0:miniStart.r,c1:miniStart.c,r1:miniStart.r};
     }
     updatePlaceNote();renderMini();renderCells();
   }
@@ -2789,12 +2850,12 @@ document.getElementById('mini-grid').addEventListener('pointerup',e=>{
 
 function updatePlaceNote(){
   const n=document.getElementById('place-note');
-  if(!state.pickRange){n.textContent='タップで始点 → もう一度タップで終点';return;}
-  if(rangeOverlaps(state.pickRange,occupiedSet())){
+  if(!boardState.pickRange){n.textContent='タップで始点 → もう一度タップで終点';return;}
+  if(rangeOverlaps(boardState.pickRange,occupiedSet())){
     n.innerHTML=`<b style="color:var(--red)">他の素材と重なっています</b>`;return;
   }
   const hint = tapAnchor ? ' （終点をタップ）' : '';
-  n.innerHTML=`配置先: <b style="color:var(--amber)">${cellLabel(state.pickRange)}</b>${hint}`;
+  n.innerHTML=`配置先: <b style="color:var(--amber)">${cellLabel(boardState.pickRange)}</b>${hint}`;
 }
 
 // ══════════ Board direct drag-select + tile drag ══════════
@@ -2804,7 +2865,7 @@ let dragTile=null, dragStart=null, tileOrig=null, boxStart=null;
 
 function evtToNative(e){
   const rect=outer.getBoundingClientRect();
-  const sz=BOARD_SIZES[state.size];
+  const sz=BOARD_SIZES[boardState.size];
   return {
     x:(e.clientX-rect.left)/rect.width*sz.w,
     y:(e.clientY-rect.top)/rect.height*sz.h,
@@ -2814,7 +2875,7 @@ let dragMoved=false, dragStartXY=null;
 outer.addEventListener('pointerdown',e=>{
   const tileNode=e.target.closest('.tile');
   if(tileNode){
-    const id=+tileNode.dataset.id;state.selId=id;
+    const id=+tileNode.dataset.id;boardState.selId=id;
     const el=cur();
     if(el.type==='image'&&!el.src){ pickImageFor(el); return; }
     const p=evtToNative(e);
@@ -2829,7 +2890,7 @@ outer.addEventListener('pointerdown',e=>{
     const p=evtToNative(e);
     const cc=cellAtPx(p.x,p.y);
     mode='select';boxStart=cc;
-    state.pickRange={c0:cc.c,r0:cc.r,c1:cc.c,r1:cc.r};
+    boardState.pickRange={c0:cc.c,r0:cc.r,c1:cc.c,r1:cc.r};
     outer.setPointerCapture(e.pointerId);
     updatePlaceNote();renderCells();renderMini();
   }
@@ -2837,7 +2898,7 @@ outer.addEventListener('pointerdown',e=>{
 outer.addEventListener('pointermove',e=>{
   if(mode==='select'&&boxStart){
     const p=evtToNative(e);const cc=cellAtPx(p.x,p.y);
-    state.pickRange={c0:boxStart.c,r0:boxStart.r,c1:cc.c,r1:cc.r};
+    boardState.pickRange={c0:boxStart.c,r0:boxStart.r,c1:cc.c,r1:cc.r};
     updatePlaceNote();renderCells();renderMini();
   }else if(mode==='move'&&dragTile){
     if(dragStartXY && Math.hypot(e.clientX-dragStartXY.x, e.clientY-dragStartXY.y)>8) dragMoved=true;
@@ -2849,7 +2910,7 @@ outer.addEventListener('pointermove',e=>{
     let c0=Math.max(0,Math.min(cc.c, m.cols-1-spanC));
     let r0=Math.max(0,Math.min(cc.r, m.rows-1-spanR));
     dragTile.cell={c0,r0,c1:c0+spanC,r1:r0+spanR};
-    state.pickRange={...dragTile.cell};
+    boardState.pickRange={...dragTile.cell};
     renderTiles();renderCells();
   }
 });
@@ -2857,7 +2918,7 @@ outer.addEventListener('pointerup',e=>{
   if(mode==='move'&&dragTile){
     if(!dragMoved){
       // tap on a placed tile → open detail panel
-      state.pickRange={...dragTile.cell};
+      boardState.pickRange={...dragTile.cell};
       mode=null;dragTile=null;boxStart=null;
       render();renderEditor();openDetail();
       return;
@@ -2873,7 +2934,7 @@ outer.addEventListener('pointerup',e=>{
       if(!ok) dragTile.cell={...tileOrig};
     }
     if(dragTile.cell.c0!==tileOrig.c0||dragTile.cell.r0!==tileOrig.r0) pushHist(true);
-    state.pickRange={...dragTile.cell};
+    boardState.pickRange={...dragTile.cell};
   }
   mode=null;dragTile=null;boxStart=null;
   render();renderEditor();
@@ -2883,8 +2944,8 @@ outer.addEventListener('pointerup',e=>{
 document.getElementById('btn-place').addEventListener('click',()=>{
   const el=cur();
   if(!el){toast('先に素材を選んでください');return;}
-  if(!state.pickRange){toast('セル範囲を選んでください');return;}
-  if(!tryPlace(el, state.pickRange)) return;
+  if(!boardState.pickRange){toast('セル範囲を選んでください');return;}
+  if(!tryPlace(el, boardState.pickRange)) return;
   render();renderEditor();
   pushHist(true);
   toast('配置しました');
@@ -2893,17 +2954,17 @@ document.getElementById('btn-place').addEventListener('click',()=>{
 // ══════════ Elements ══════════
 document.querySelectorAll('#panel-board [data-add]').forEach(b=>b.addEventListener('click',()=>{
   const type=b.dataset.add;
-  const el=Object.assign({id:state.nextId++,type,cell:null}, elDefaults());
+  const el=Object.assign({id:boardState.nextId++,type,cell:null}, elDefaults());
   if(type==='image'){el.src=null;el.fit='cover';el.focus='center';}
   else if(type==='title'){el.text='（ここにキャッチコピーなどを記入）';}
   else if(type==='spec'){el.text='SPEC\n（ここに商品詳細情報などを記入）';}
   else{el.text='（ここにアピール文などを記入）';}
-  state.els.push(el);state.selId=el.id;
+  boardState.els.push(el);boardState.selId=el.id;
   // default suggested range: a reasonable block (not a single tiny cell)
   const {c:cols,r:rows}=gridDims();
   const dw=Math.max(1,Math.min(cols-1, Math.round(cols/2)-1));
   const dh=Math.max(1,Math.min(rows-1, Math.round(rows/2)-1));
-  state.pickRange={c0:0,r0:0,c1:dw,r1:dh};
+  boardState.pickRange={c0:0,r0:0,c1:dw,r1:dh};
   render();renderEditor();showPlaceSection();updatePlaceNote();
   pushHist(true);
   toast('素材を追加。範囲を選んで「ここに置く」');
@@ -2911,8 +2972,8 @@ document.querySelectorAll('#panel-board [data-add]').forEach(b=>b.addEventListen
 
 function renderList(){
   const wrap=document.getElementById('el-list');wrap.innerHTML='';
-  state.els.forEach(el=>{
-    const d=document.createElement('div');d.className='el-item'+(el.id===state.selId?' sel':'');
+  boardState.els.forEach(el=>{
+    const d=document.createElement('div');d.className='el-item'+(el.id===boardState.selId?' sel':'');
     const ico=el.type==='image'?'▨':el.type==='spec'?'☰':el.type==='title'?'H':'¶';
     let nm=el.type==='image'?(el.src?'写真':'写真（未選択）'):(el.text||'').split('\n')[0]||'（空）';
     if(nm.length>12)nm=nm.slice(0,12)+'…';
@@ -2920,14 +2981,14 @@ function renderList(){
       <div class="el-nm">${esc(nm)}</div>
       ${el.cell?`<span class="el-cell">${cellLabel(el.cell)}</span>`:'<span class="el-cell" style="color:var(--text-dim)">未配置</span>'}
       <button class="el-del" data-del="${el.id}">×</button></div>`;
-    d.addEventListener('click',ev=>{ if(ev.target.closest('.el-del'))return; state.selId=el.id;
-      if(el.cell){state.pickRange={...el.cell};}
-      else if(!state.pickRange){const {c:cols,r:rows}=gridDims();state.pickRange={c0:0,r0:0,c1:Math.min(2,cols-1),r1:Math.min(2,rows-1)};}
+    d.addEventListener('click',ev=>{ if(ev.target.closest('.el-del'))return; boardState.selId=el.id;
+      if(el.cell){boardState.pickRange={...el.cell};}
+      else if(!boardState.pickRange){const {c:cols,r:rows}=gridDims();boardState.pickRange={c0:0,r0:0,c1:Math.min(2,cols-1),r1:Math.min(2,rows-1)};}
       render();renderEditor();showPlaceSection();updatePlaceNote(); });
     wrap.appendChild(d);
   });
   wrap.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
-    const id=+b.dataset.del;state.els=state.els.filter(x=>x.id!==id);if(state.selId===id){state.selId=null;state.pickRange=null;closeDetail();}
+    const id=+b.dataset.del;boardState.els=boardState.els.filter(x=>x.id!==id);if(boardState.selId===id){boardState.selId=null;boardState.pickRange=null;closeDetail();}
     render();renderEditor();pushHist(true);
   }));
 }
@@ -3044,7 +3105,7 @@ document.getElementById('board-file-input').addEventListener('change',e=>{
 
 // ══════════ Flow (visual guide) ══════════
 function calcFlow(){
-  const placed=state.els.filter(e=>e.cell);
+  const placed=boardState.els.filter(e=>e.cell);
   const path=document.getElementById('flow-path'),mg=document.getElementById('flow-markers');
   mg.innerHTML='';
   if(placed.length<2){path.setAttribute('d','');return;}
@@ -3187,7 +3248,7 @@ function renderPresets(){
   const wrap=document.getElementById('presets'); wrap.innerHTML='';
   Object.entries(PRESETS).forEach(([key,p])=>{
     const d=document.createElement('div');
-    d.className='preset-chip'+(state.preset===key?' on':'');
+    d.className='preset-chip'+(boardState.preset===key?' on':'');
     d.dataset.preset=key;
     // dots: accent + light + ink preview derived from accent
     const hsl=hexToHsl(p.accent);
@@ -3201,29 +3262,29 @@ function renderPresets(){
 }
 function applyPreset(key){
   const p=PRESETS[key]; if(!p) return;
-  state.preset=key; state.taste=p.taste; state.colorMode=p.mode; state.accent=p.accent;
+  boardState.preset=key; boardState.taste=p.taste; boardState.colorMode=p.mode; boardState.accent=p.accent;
   syncControlsFromState(); computeColors(); render(); renderDetail();
   pushHist(true);
 }
 
 // ══════════ Controls ══════════
-document.getElementById('size-chips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;state.size=c.dataset.size;document.querySelectorAll('#size-chips .chip').forEach(x=>x.classList.toggle('on',x===c));applySize();render();pushHist(true);});
+document.getElementById('size-chips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;boardState.size=c.dataset.size;document.querySelectorAll('#size-chips .chip').forEach(x=>x.classList.toggle('on',x===c));applySize();render();pushHist(true);});
 document.getElementById('grid-chips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;
   // clamp existing placements to new grid
-  state.grid=c.dataset.grid;const {c:cols,r:rows}=gridDims();
-  state.els.forEach(el=>{if(el.cell){el.cell.c0=Math.min(el.cell.c0,cols-1);el.cell.c1=Math.min(el.cell.c1,cols-1);el.cell.r0=Math.min(el.cell.r0,rows-1);el.cell.r1=Math.min(el.cell.r1,rows-1);}});
-  state.pickRange=null;
+  boardState.grid=c.dataset.grid;const {c:cols,r:rows}=gridDims();
+  boardState.els.forEach(el=>{if(el.cell){el.cell.c0=Math.min(el.cell.c0,cols-1);el.cell.c1=Math.min(el.cell.c1,cols-1);el.cell.r0=Math.min(el.cell.r0,rows-1);el.cell.r1=Math.min(el.cell.r1,rows-1);}});
+  boardState.pickRange=null;
   document.querySelectorAll('#grid-chips .chip').forEach(x=>x.classList.toggle('on',x===c));render();pushHist(true);});
-document.getElementById('board-color').addEventListener('input',e=>{state.accent=e.target.value;computeColors();renderDetail();pushHist();});
-document.querySelectorAll('#panel-board .theory-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#panel-board .theory-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on');state.colorMode=b.dataset.mode;computeColors();renderDetail();pushHist(true);}));
+document.getElementById('board-color').addEventListener('input',e=>{boardState.accent=e.target.value;computeColors();renderDetail();pushHist();});
+document.querySelectorAll('#panel-board .theory-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#panel-board .theory-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on');boardState.colorMode=b.dataset.mode;computeColors();renderDetail();pushHist(true);}));
 // overflow menu
 const menuPop=document.getElementById('menu-pop');
 document.getElementById('btn-menu').addEventListener('click',e=>{ e.stopPropagation(); menuPop.classList.toggle('open'); });
 document.addEventListener('click',()=>menuPop.classList.remove('open'));
 menuPop.addEventListener('click',e=>e.stopPropagation());
 menuPop.querySelector('[data-menu="guide"]').addEventListener('click',function(){
-  state.showGuide=!state.showGuide;
-  this.classList.toggle('on',state.showGuide);
+  boardState.showGuide=!boardState.showGuide;
+  this.classList.toggle('on',boardState.showGuide);
   renderCells();
   menuPop.classList.remove('open');
 });
@@ -3231,7 +3292,7 @@ menuPop.querySelector('[data-menu="preview"]').addEventListener('click',()=>{
   menuPop.classList.remove('open');
   doPreview();
 });
-document.getElementById('flow-toggle').addEventListener('change',e=>{state.showFlow=e.target.checked;if(state.showFlow)calcFlow();else clearFlow();});
+document.getElementById('flow-toggle').addEventListener('change',e=>{boardState.showFlow=e.target.checked;if(boardState.showFlow)calcFlow();else clearFlow();});
 document.getElementById('btn-undo').addEventListener('click',undo);
 document.getElementById('btn-redo').addEventListener('click',redo);
 document.addEventListener('keydown',e=>{
@@ -3247,10 +3308,10 @@ async function ensureH2C(){ /* html2canvasは<head>で同梱済み。CDN読み�
 async function renderBoardCanvas(){
   const outer=document.getElementById('board-outer'),svg=document.getElementById('flow-svg');
   const sd=svg.style.display;
-  const selBackup=state.selId; state.selId=null;
+  const selBackup=boardState.selId; boardState.selId=null;
   svg.style.display='none';
   // temporarily switch board to NATIVE px for a high-res, correct-aspect capture
-  const sz=BOARD_SIZES[state.size];
+  const sz=BOARD_SIZES[boardState.size];
   outer.style.transform='none';
   outer.style.width=sz.w+'px'; outer.style.height=sz.h+'px';
   renderTiles(); // re-fit text at native size
@@ -3266,22 +3327,13 @@ async function renderBoardCanvas(){
     });
   }finally{
     svg.style.display=sd; cl.style.display=clDisp;
-    state.selId=selBackup;
+    boardState.selId=selBackup;
     render(); // restores display sizing (applySize) and all layers
   }
 }
-async function shareOrDownload(blob,name){
-  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-  try{
-    const file=new File([blob],name,{type:blob.type||'image/png'});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:name});toast('共有シートを開きました');return;}catch(err){if(err.name==='AbortError')return;}}
-  }catch(e){}
-  if(isIOS){const rd=new FileReader();rd.onload=()=>{const b=document.getElementById('preview-modal-body');b.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:14px;"><div style="color:#fff;font-size:11px;text-align:center;line-height:1.6;">画像を長押しして<br>「"写真"に追加」で保存</div><img src="${rd.result}"></div>`;document.getElementById('preview-modal').classList.add('show');};rd.readAsDataURL(blob);return;}
-  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.download=name;a.href=url;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),10000);toast('書き出し完了');
-}
 document.getElementById('btn-export').addEventListener('click',async()=>{
   toast('レンダリング中...');
-  try{const cv=await renderBoardCanvas();const blob=await new Promise(r=>cv.toBlob(r,'image/png'));await shareOrDownload(blob,`pars-board-${Date.now()}.png`);}
+  try{const cv=await renderBoardCanvas();const blob=await new Promise(r=>cv.toBlob(r,'image/png'));await window.ParsUI.shareBlob(blob,`pars-board-${Date.now()}.png`);}
   catch(e){console.error(e);toast('書き出し失敗');}
 });
 async function doPreview(){
@@ -3291,7 +3343,7 @@ async function doPreview(){
 }
 
 // ══════════ Init ══════════
-const ro=new ResizeObserver(()=>{ if(!boardActive())return; applySize();if(state.showFlow)calcFlow();});
+const ro=new ResizeObserver(()=>{ if(!boardActive())return; applySize();if(boardState.showFlow)calcFlow();});
 ro.observe(document.getElementById('preview-area'));
 renderPresets();
 computeColors();applySize();render();
@@ -3310,20 +3362,16 @@ window.ParsBoard = {
 // CUTOUT（moduleスコープ：他と衝突しない）
 // ══════════════════════════════════════════
 const $=id=>document.getElementById(id);
-function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),2400);}
+const toast=m=>window.ParsUI.toast(m);
 
 // ── State ──
-let segModel=null, segProcessor=null, tfEnv=null, RawImageCls=null;
-let libLoading=false;
-let originalBitmap=null;
-let cutoutBitmap=null;
 let currentBg='checker';
 // ── Editing layers (kept so brushing can re-composite any time) ──
 let origCanvas=null;   // original photo at full res
-let aiMask=null;       // Uint8ClampedArray alpha from the AI (0..255), length W*H
+let aiMask=null;       // ベースアルファ(0..255) length W*H。現在は全面255（自動判定を足すならここ）
 let editMask=null;     // Int16Array of user deltas: +255 restore, -255 erase, 0 untouched
 let imgW=0, imgH=0;
-let brushMode='restore';   // 'restore' | 'erase' | 'wand'
+let brushMode='wand';      // 'wand' | 'restore' | 'erase'（初期表示はHTMLと一致させる）
 let brushShape='free';     // 'free' | 'line' | 'curve'
 let brushSize=40;
 let painting=false;
@@ -3333,9 +3381,7 @@ let wandIsland=60;         // ゴミ取り（取り残し島の面積）
 let wandFeather=1;         // フチなじませ
 let wandMode='cut';        // 'cut' | 'keep'
 let wandCache=null;        // 縮小判定用 {W,H,scale,px,mag}
-let brushMask=null;        // 筆で描いた分
 let feather=0;             // フチぼかし半径(px)
-let lastEditSnapshot=null; // (旧・未使用)
 let lineStart=null, linePrev=null;  // 直線プレビュー
 let curvePts=[];                    // 曲線のアンカー点
 
@@ -3376,16 +3422,6 @@ function updCoBtns(){
   $('co-redo').disabled = coHp>=coHist.length-1;
 }
 
-// ── Environment check ──
-function checkEnv(){
-  const ua=navigator.userAgent;
-  const isIOS=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-  let safariVer=null;
-  const m=ua.match(/Version\/(\d+)\.(\d+)/);
-  if(m && /Safari/.test(ua) && !/Chrome|CriOS|EdgiOS/.test(ua)){ safariVer=parseFloat(m[1]+'.'+m[2]); }
-  const hasWebGPU = 'gpu' in navigator;
-  return {isIOS, safariVer, hasWebGPU};
-}
 function showWarn(msg){const w=$('warn');w.textContent=msg;w.classList.add('show');}
 
 // Rebuild the transparent cutout from: original pixels + AI mask + user edits.
@@ -3393,6 +3429,7 @@ function showWarn(msg){const w=$('warn');w.textContent=msg;w.classList.add('show
 // We update its alpha in place and blit it — never create ImageBitmaps
 // (those leak GPU memory on iOS and crash the tab after a few strokes).
 let cutCanvas=null, cutCtx=null, baseImageData=null, workImageData=null;
+let alphaBuf=null; // 合成アルファの使い回しバッファ（毎フレームの確保を避ける）
 function initCompositeBuffers(){
   cutCanvas=document.createElement('canvas');
   cutCanvas.width=imgW; cutCanvas.height=imgH;
@@ -3411,7 +3448,8 @@ function recompose(skipFeather=false){
     const px=workImageData.data;
     const N=aiMask.length;
     // 合成アルファをまず配列に
-    let alpha=new Uint8ClampedArray(N);
+    if(!alphaBuf||alphaBuf.length!==N) alphaBuf=new Uint8ClampedArray(N);
+    let alpha=alphaBuf;
     for(let i=0;i<N;i++){
       let a=aiMask[i]+editMask[i];
       if(a<0)a=0; else if(a>255)a=255;
@@ -3475,7 +3513,6 @@ async function calcCutout(blob){
     origCanvas.getContext('2d').drawImage(bmp,0,0);
     aiMask=new Uint8ClampedArray(imgW*imgH); aiMask.fill(255);
     editMask=new Int16Array(imgW*imgH);
-    brushMask=new Int16Array(imgW*imgH);
     cutCanvas=null; cutCtx=null; baseImageData=null; workImageData=null;
     wandCache=null;
     recompose();
@@ -3629,7 +3666,7 @@ function wandEraseAt(ix,iy){
       const m=soft?Math.min(1,soft[k]):mask[k];
       if(m>0){
         const v = wandMode==='keep' ? 0 : -Math.round(255*m);
-        if(editMask[base+x]!==v){ editMask[base+x]=v; noteBrush(base+x,v); count++; }
+        if(editMask[base+x]!==v){ editMask[base+x]=v; count++; }
       }
     }
   }
@@ -3643,7 +3680,6 @@ function wandEraseAt(ix,iy){
 
 
 
-function saveEditSnapshot(){ /* RLE履歴方式に移行済み */ }
 
 // ── Canvas drawing with bg preview ──
 function drawResult(){
@@ -3720,7 +3756,6 @@ function drawAnchors(ctx){
 
 // ── 面の一括処理：矩形・多角形の内側をまとめて消す/戻す ──
 function fillVal(){ return brushMode==='erase' ? -255 : 255; }
-function noteBrush(i,v){ if(brushMask) brushMask[i]=v; }
 function fillRectMask(a,b){
   const x0=Math.max(0,Math.floor(Math.min(a.x,b.x))), x1=Math.min(imgW-1,Math.ceil(Math.max(a.x,b.x)));
   const y0=Math.max(0,Math.floor(Math.min(a.y,b.y))), y1=Math.min(imgH-1,Math.ceil(Math.max(a.y,b.y)));
@@ -3780,7 +3815,6 @@ function paintAt(ix,iy){
       if(dx*dx+dy*dy>r2) continue;
       const xx=ix+dx; if(xx<0||xx>=imgW) continue;
       editMask[yy*imgW+xx]=val;
-      noteBrush(yy*imgW+xx,val); // ワンド再計算後も筆跡を保持するため記録
     }
   }
 }
@@ -4120,33 +4154,13 @@ async function exportBlob(){
   // export the pure cutout (transparent), not the previewed bg
   return await new Promise(r=>cutCanvas.toBlob(r,'image/png'));
 }
-async function shareOrDownload(blob,name){
-  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-  try{
-    const file=new File([blob],name,{type:'image/png'});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){
-      try{ await navigator.share({files:[file],title:name}); toast('共有シートを開きました'); return; }
-      catch(err){ if(err.name==='AbortError') return; }
-    }
-  }catch(e){}
-  if(isIOS){
-    const rd=new FileReader();
-    rd.onload=()=>{
-      const body=document.getElementById('preview-modal-body');
-      body.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;"><div style="color:#fff;font-family:'DM Mono',monospace;font-size:11px;text-align:center;line-height:1.6;">画像を長押しして<br>「"写真"に追加」で保存</div><img src="${rd.result}" style="max-width:100%;max-height:70vh;object-fit:contain;"></div>`;
-      document.getElementById('preview-modal').classList.add('show');
-    };
-    rd.readAsDataURL(blob); return;
-  }
-  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.download=name;a.href=url;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),10000);toast('保存しました');
-}
 $('btn-save').addEventListener('click',async()=>{
   if(!cutCanvas) return;
   const blob=await exportBlob();
-  await shareOrDownload(blob,`cutout-${Date.now()}.png`);
+  await window.ParsUI.shareBlob(blob,`cutout-${Date.now()}.png`);
 });
 $('btn-reset').addEventListener('click',()=>{
-  cutoutBitmap=null; origCanvas=null; aiMask=null; editMask=null;
+  origCanvas=null; aiMask=null; editMask=null; alphaBuf=null;
   coHist=[]; coHp=-1; updCoBtns(); resetView();
   cutCanvas=null; cutCtx=null; baseImageData=null; workImageData=null;
   $('stage').classList.remove('show');
@@ -4158,14 +4172,9 @@ $('btn-reset').addEventListener('click',()=>{
 // ── Lumenへ渡す（透過PNGのまま加工工程へ） ──
 $('btn-tolumen').addEventListener('click',()=>{
   if(!cutCanvas){ toast('先に切り抜いてください'); return; }
-  const url=cutCanvas.toDataURL('image/png');
-  if(window.ParsBridge && window.ParsBridge.loadIntoLumen){
-    window.ParsBridge.loadIntoLumen(url, 'cutout', true);
-    window.ParsBridge.goTab('lumen');
-  }
+  // 画像の受け渡しはタブ側のautoHandoffToLumenが行う（同じPNGを二度デコードしない）
+  if(window.ParsBridge) window.ParsBridge.goTab('lumen');
 });
-// Cutoutで編集し直したら、次にLumenを開いたとき最新が反映されるようにする
-window.__parsCutoutTouched = ()=>{ if(typeof lastHandoffSig!=='undefined') lastHandoffSig=null; };
 
 // ── スナップへ送る（透過PNGを共通トレイへ → Boardで使える） ──
 $('btn-tosnap').addEventListener('click',()=>{
@@ -4178,7 +4187,8 @@ $('btn-tosnap').addEventListener('click',()=>{
 window.__parsCutoutGetDataURL = ()=> cutCanvas ? cutCanvas.toDataURL('image/png') : null;
 
 // ── Init ──
-checkEnv();
+setBrushBtns();
+setShapeBtns();
 </script>
 </body>
 </html>
