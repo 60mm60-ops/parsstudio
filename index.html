@@ -1795,7 +1795,7 @@ function drawOneLight(ctx, canvas, lx, ly, color, intensity, core, radius, softn
   hg.addColorStop(0,   hexToRgba(color, intensity * (0.06 + s * 0.24)));
   hg.addColorStop(0.3, hexToRgba(color, intensity * (0.03 + s * 0.14)));
   hg.addColorStop(0.7, hexToRgba(color, intensity * (0.01 + s * 0.06)));
-  hg.addColorStop(1,   'rgba(0,0,0,0)');
+  hg.addColorStop(1,   hexToRgba(color, 0));
   // 到達円の中だけ塗る（画面全体を薄く覆わない＝小さい光がちゃんと小さくなる）
   ctx.fillStyle = hg;
   ctx.beginPath(); ctx.arc(lx, ly, haloR, 0, Math.PI*2); ctx.fill();
@@ -1819,7 +1819,7 @@ function drawOneLight(ctx, canvas, lx, ly, color, intensity, core, radius, softn
   rg.addColorStop(Math.max(0.02, edge * 0.55), hexToRgba(color, intensity * (0.90 - s * 0.62)));
   rg.addColorStop(Math.max(0.05, edge),        hexToRgba(color, intensity * (0.80 - s * 0.72)));
   rg.addColorStop(Math.min(0.98, edge + (1 - edge) * 0.55), hexToRgba(color, intensity * (0.25 - s * 0.18)));
-  rg.addColorStop(1, 'rgba(0,0,0,0)');
+  rg.addColorStop(1, hexToRgba(color, 0));
   ctx.fillStyle = rg;
   ctx.beginPath(); ctx.arc(lx, ly, radius, 0, Math.PI*2); ctx.fill();
 
@@ -1827,7 +1827,7 @@ function drawOneLight(ctx, canvas, lx, ly, color, intensity, core, radius, softn
     const dg = ctx.createRadialGradient(lx, ly, radius * 0.3, lx, ly, radius * 2.0);
     dg.addColorStop(0,   hexToRgba(color, diffuse * 0.18));
     dg.addColorStop(0.4, hexToRgba(color, diffuse * 0.08));
-    dg.addColorStop(1,   'rgba(0,0,0,0)');
+    dg.addColorStop(1,   hexToRgba(color, 0));
     ctx.fillStyle = dg;
     ctx.beginPath(); ctx.arc(lx, ly, radius * 2.0, 0, Math.PI*2); ctx.fill();
   }
